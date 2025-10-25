@@ -6,6 +6,7 @@ import userRoutes from './routes/userRoutes.js';
 import volRoutes from './routes/volunteerRoutes.js'
 import coordRoutes from './routes/coordinatorRoutes.js';
 import facultyRoutes from './routes/facultyRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use('/user', userRoutes);
 app.use('/volunteer',volRoutes);
 app.use('/coordinator',coordRoutes);
 app.use('/faculty',facultyRoutes);
+app.use('/admin', adminRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
