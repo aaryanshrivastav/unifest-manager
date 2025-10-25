@@ -1,7 +1,7 @@
-const bcrypt = require('bcryptjs');
-const { getConnection } = require('../config/db');
-const { generateToken } = require('../utils/jwt');
-const crypto = require('crypto');
+import bcrypt from 'bcryptjs';
+import { getConnection } from '../config/db.js';
+import { generateToken } from '../utils/jwt.js';
+import crypto from 'crypto';
 
 function generateUserId() {
   const randomNum = Math.floor(1000 + Math.random() * 9000);
@@ -13,7 +13,7 @@ function generateLogId() {
 }
 
 // REGISTER
-async function registerUser(req, res) {
+export async function registerUser(req, res) {
   const { first_name, last_name, email, phone, password } = req.body;
   const connection = await getConnection();
 
@@ -72,7 +72,7 @@ async function registerUser(req, res) {
 }
 
 // LOGIN
-async function loginUser(req, res) {
+export async function loginUser(req, res) {
   const { email, password } = req.body;
   const connection = await getConnection();
 
@@ -85,8 +85,7 @@ async function loginUser(req, res) {
     if (result.rows.length === 0)
       return res.status(404).json({ message: 'User not found' });
 
-    const [user_id, dbEmail, dbPassword, role_id, first_name, last_name] =
-      result.rows[0];
+    const [user_id, dbEmail, dbPassword, role_id, first_name, last_name] = result.rows[0];
     const isMatch = await bcrypt.compare(password, dbPassword);
 
     if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
@@ -120,7 +119,7 @@ async function loginUser(req, res) {
 }
 
 // LOGOUT
-async function logoutUser(req, res) {
+export async function logoutUser(req, res) {
   const { user_id } = req.user; // user_id comes from decoded JWT
   const connection = await getConnection();
 
@@ -148,5 +147,3 @@ async function logoutUser(req, res) {
     await connection.close();
   }
 }
-
-module.exports = { registerUser, loginUser, logoutUser };

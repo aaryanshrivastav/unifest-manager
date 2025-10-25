@@ -1,6 +1,6 @@
-const { getConnection } = require('../config/db');
+import { getConnection } from '../config/db.js';
 
-async function createTable() {
+export async function createTable() {
   const connection = await getConnection();
   try {
     await connection.execute(`
@@ -22,5 +22,3 @@ async function createTable() {
     await connection.close();
   }
 }
-
-module.exports = { createTable };

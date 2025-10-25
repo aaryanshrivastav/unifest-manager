@@ -1,11 +1,11 @@
-const crypto = require('crypto');
-const { getConnection } = require('../config/db');
+import crypto from 'crypto';
+import { getConnection } from '../config/db.js';
 
-function generateRegistrationId() {
+export function generateRegistrationId() {
   return 'REG' + crypto.randomBytes(6).toString('hex');
 }
 
-async function createTable() {
+export async function createTable() {
   const connection = await getConnection();
   try {
     await connection.execute(`
@@ -29,5 +29,3 @@ async function createTable() {
     await connection.close();
   }
 }
-
-module.exports = { generateRegistrationId, createTable };

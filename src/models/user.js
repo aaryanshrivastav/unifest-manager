@@ -1,6 +1,6 @@
-const { getConnection } = require('../config/db');
+import { getConnection } from '../config/db.js';
 
-const ROLE_PREFIX = {
+export const ROLE_PREFIX = {
   USER: 'STUD',
   VOLUNTEER: 'VOL',
   COORDINATOR: 'CORD',
@@ -8,12 +8,12 @@ const ROLE_PREFIX = {
   ADMIN: 'ADM'
 };
 
-function generateUserId(role) {
+export function generateUserId(role) {
   const randomNum = Math.floor(100000 + Math.random() * 900000);
   return ROLE_PREFIX[role] + randomNum;
 }
 
-async function createTable() {
+export async function createTable() {
   const connection = await getConnection();
   try {
     await connection.execute(`
@@ -36,5 +36,3 @@ async function createTable() {
     await connection.close();
   }
 }
-
-module.exports = { generateUserId, ROLE_PREFIX, createTable };

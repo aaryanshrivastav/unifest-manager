@@ -1,5 +1,6 @@
-const oracledb = require('oracledb');
-require('dotenv').config();
+import oracledb from 'oracledb';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const dbConfig = {
   user: process.env.DB_USER,
@@ -10,7 +11,7 @@ const dbConfig = {
   poolIncrement: 1
 };
 
-async function getConnection() {
+export async function getConnection() {
   try {
     return await oracledb.getConnection(dbConfig);
   } catch (err) {
@@ -18,5 +19,3 @@ async function getConnection() {
     throw err;
   }
 }
-
-module.exports = { getConnection };

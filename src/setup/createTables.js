@@ -1,13 +1,13 @@
-const User = require('../models/user');
-const Venue = require('../models/venueNRoles');
-const Event = require('../models/event');
-const Registration = require('../models/registration');
-const VolunteerApplication = require('../models/volunteerApplication');
-const VolunteerAssignment = require('../models/volunteerAssignment');
-const LogHistory = require('../models/loghistory');
+import User from '../models/user.js';
+import Venue from '../models/venueNRoles.js';
+import Event from '../models/event.js';
+import Registration from '../models/registration.js';
+import VolunteerApplication from '../models/volunteerApplication.js';
+import VolunteerAssignment from '../models/volunteerAssignment.js';
+import LogHistory from '../models/loghistory.js';
 
 async function createAllTables() {
-  await Venue.createTable();            
+  await Venue.createTable();
   await User.createTable();
   await LogHistory.createTable();
   await Event.createTable();
