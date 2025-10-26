@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Faculty Dashboard - Unifest</title>
+  <link rel="stylesheet" href="facultyhome.css">
+</head>
+<body data-page="faculty">
+  <header class="header">
+    <div class="container nav">
+      <div class="brand"><span class="logo">U</span> Unifest</div>
+      <nav class="nav-links">
+        <a href="facultyhome.html" class="active">Home</a>
+        <a href="facultyregister.html">Register</a>
+        <a href="facultyevents.html">Events</a>
+        <a href="#" id="logoutBtn">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container profile-container">
+    <div class="card">
+      <div class="profile-header">
+        <div class="profile-avatar" id="facultyAvatar">F</div>
+        <div class="profile-info">
+          <h1 id="facultyName">Faculty Name</h1>
+          <p id="facultyEmail">—</p>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-item"><div class="info-label">Department</div><div class="info-value" id="facultyDept">—</div></div>
+        <div class="info-item"><div class="info-label">Phone</div><div class="info-value" id="facultyPhone">—</div></div>
+        <div class="info-item"><div class="info-label">Total Events</div><div class="info-value" id="facultyEvents">—</div></div>
+      </div>
+
+      <h2 class="section-title">My Events</h2>
+      <div id="eventsContainer" class="events-list"></div>
+    </div>
+  </main>
+
+  <script type="module" src="js/facultyhome.js"></script>
+</body>
+<!-- FOOTER -->
+<footer>
+  <p>
+    Developed by 
+    <a href="https://github.com/mitalisaxena" target="_blank"><strong>Mitali Saxena</strong></a>, 
+    <a href="https://github.com/aarushi-chaudhary" target="_blank"><strong>Aarushi Chaudhary</strong></a>, and 
+    <a href="https://github.com/aaryanshrivastav" target="_blank"><strong>Aaryan Shrivastav</strong></a> | Batch 4
+  </p>
+  <p>
+    <a href="https://github.com/" target="_blank">Project GitHub Repository</a>
+    <a href="https://in.linkedin.com/" target="_blank">linkedin</a>
+  </p>
+</footer>
+</html>

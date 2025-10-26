@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin Approvals</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body data-page="admin-approval">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container nav">
+      <div class="brand"><span class="logo">U</span> Unifest Admin</div>
+      <nav class="nav-links">
+        <a href="adminhome.html">Home</a>
+        <a href="adminapproval.html" class="active">Approvals</a>
+        <a href="adminlist.html">List</a>
+        <a href="#" id="logoutBtn">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container admin-container">
+    <div class="card">
+      <h2 class="section-title">Approval Management</h2>
+
+      <div class="form-group">
+        <label for="approvalType">Select Approval Type</label>
+        <select id="approvalType">
+          <option value="">-- Select --</option>
+          <option value="events">Events</option>
+          <option value="volunteers">Volunteers</option>
+        </select>
+      </div>
+
+      <div id="approvalList" class="events-list">
+        <!-- Approvals will be dynamically populated here -->
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    const approvalType = document.getElementById('approvalType');
+    const approvalList = document.getElementById('approvalList');
+
+    const dummyData = {
+      events: Array.from({length: 10}, (_, i) => `Event Approval ${i+1}`),
+      volunteers: Array.from({length: 10}, (_, i) => `Volunteer Approval ${i+1}`)
+    };
+
+    approvalType.addEventListener('change', e => {
+      const type = e.target.value;
+      approvalList.innerHTML = '';
+      if (type && dummyData[type]) {
+        dummyData[type].forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'event-card';
+          div.textContent = item;
+          approvalList.appendChild(div);
+        });
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', e => {
+      e.preventDefault();
+      alert('Logged out');
+      window.location.href = 'login.html';
+    });
+  </script>
+</body>
+<!-- FOOTER -->
+<footer>
+  <p>
+    Developed by 
+    <a href="https://github.com/mitalisaxena" target="_blank"><strong>Mitali Saxena</strong></a>, 
+    <a href="https://github.com/aarushi-chaudhary" target="_blank"><strong>Aarushi Chaudhary</strong></a>, and 
+    <a href="https://github.com/aaryanshrivastav" target="_blank"><strong>Aaryan Shrivastav</strong></a> | Batch 4
+  </p>
+  <p>
+    <a href="https://github.com/" target="_blank">Project GitHub Repository</a>
+    <a href="https://in.linkedin.com/" target="_blank">linkedin</a>
+  </p>
+</footer>
+
+</html>

@@ -1,0 +1,185 @@
+/* ---------- BASE RESET ---------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ---------- GLOBAL BODY ---------- */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: linear-gradient(135deg, #1e2838 0%, #2c3e50 50%, #3a4d62 100%);
+  min-height: 100vh;
+  color: #e0e6ed;
+}
+
+/* ---------- NAVBAR ---------- */
+.navbar {
+  background-color: #1e2838;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo svg {
+  display: block;
+}
+
+.brand-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #b8c5d6;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-links a {
+  color: #e0e6ed;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+  position: relative;
+}
+
+.nav-links a:hover {
+  color: #6B7EE8;
+}
+
+.nav-links a.active {
+  color: #6B7EE8;
+}
+
+.nav-links a.active::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #6B7EE8;
+}
+
+/* ---------- PAGE HEADER ---------- */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #b8c5d6;
+  margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+  font-size: 1.1rem;
+  color: #95a5a6;
+}
+
+/* ---------- SHIFTS GRID ---------- */
+.shifts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+
+/* ---------- SHIFT CARD ---------- */
+.shift-card {
+  background-color: rgba(42, 55, 75, 0.7);
+  border: 1px solid rgba(107, 126, 232, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.shift-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(107, 126, 232, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.shift-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #e0e6ed;
+  margin-bottom: 1rem;
+}
+
+.shift-detail {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  color: #b8c5d6;
+  font-size: 0.95rem;
+}
+
+.shift-detail svg {
+  width: 18px;
+  height: 18px;
+  color: #6B7EE8;
+}
+
+.shift-status {
+  display: inline-block;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-top: 0.75rem;
+}
+
+.shift-status.completed {
+  background-color: rgba(46, 204, 113, 0.15);
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  color: #2ecc71;
+}
+
+.shift-status.pending {
+  background-color: rgba(241, 196, 15, 0.15);
+  border: 1px solid rgba(241, 196, 15, 0.3);
+  color: #f1c40f;
+}
+
+/* ---------- EMPTY STATE ---------- */
+.no-events {
+  text-align: center;
+  padding: 4rem 2rem;
+  background-color: rgba(42, 55, 75, 0.5);
+  border-radius: 12px;
+  margin-top: 2rem;
+}
+
+.no-events svg {
+  color: #6B7EE8;
+  margin-bottom: 1.5rem;
+}
+
+.no-events h2 {
+  font-size: 1.75rem;
+  color: #b8c5d6;
+  margin-bottom: 0.75rem;
+}
+
+.no-events p {
+  color: #95a5a6;
+  font-size: 1rem;
+}

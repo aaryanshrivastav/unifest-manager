@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Login - Unifest</title>
+  <link rel="stylesheet" href="login.css">
+</head>
+<body data-page="login">
+  <header class="header">
+    <div class="container nav">
+      <div class="brand"><span class="logo">U</span> Unifest Manager</div>
+      <nav class="nav-links"><a href="landingpage.html">Home</a></nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="card" style="max-width:420px;margin:2rem auto">
+      <h2>Sign in</h2>
+      <form id="loginForm" class="form" aria-label="Login form">
+        <label>Email <input id="email" type="email" class="input" required></label>
+        <label>Password <input id="password" type="password" class="input" required minlength="6"></label>
+        <button class="btn primary" type="submit">Login</button>
+        <div id="loginError" role="alert" style="color:var(--danger);"></div>
+      </form>
+      <p class="note">Demo users: backend must provide roles (admin/organizer/volunteer/student).</p>
+    </div>
+  </main>
+
+  <script type="module" src="js/login.js"></script>
+</body>
+</html>

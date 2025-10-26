@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Register - Unifest</title>
+  <link rel="stylesheet" href="register.css">
+</head>
+<body data-page="register">
+  <header class="header">
+    <div class="container nav">
+      <div class="brand"><span class="logo">U</span> Unifest</div>
+      <nav class="nav-links"><a href="events.html">Back</a></nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="card" style="max-width:520px;margin:1.5rem auto">
+      <h2>Event Registration</h2>
+      <form id="regForm" class="form">
+        <input id="event_id" type="hidden">
+        <label>Registration Type
+          <select id="reg_type" class="input">
+            <option value="INDIVIDUAL">Individual</option>
+            <option value="TEAM">Team</option>
+          </select>
+        </label>
+        <label>Team Name (if team) <input id="team_name" class="input"></label>
+        <label>Contact number <input id="contact" class="input" required></label>
+        <div class="row">
+          <button class="btn primary" type="submit">Submit</button>
+          <a class="btn ghost" href="events.html">Cancel</a>
+        </div>
+        <div id="regMsg" role="status" class="note"></div>
+      </form>
+    </div>
+  </main>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

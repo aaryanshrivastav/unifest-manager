@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Registration - Unifest Manager</title>
+    <link rel="stylesheet" href="uservolunteer.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 40 40">
+                    <circle cx="20" cy="20" r="18" fill="#6B7EE8"/>
+                    <text x="20" y="27" font-size="20" font-weight="bold" fill="white" text-anchor="middle">U</text>
+                </svg>
+            </div>
+            <span class="brand-name">Unifest Manager</span>
+        </div>
+        <div class="nav-links">
+            <a href="userhome.html">Home</a>
+            <a href="userevent.html">Events</a>
+            <a href="usermyevent.html">My Events</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="form-card">
+            <h1 class="form-title">Volunteer Registration</h1>
+            
+            <form id="volunteerForm">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="year">Year</label>
+                    <select id="year" name="year" required>
+                        <option value="">Select Year</option>
+                        <option value="1">First Year</option>
+                        <option value="2">Second Year</option>
+                        <option value="3">Third Year</option>
+                        <option value="4">Fourth Year</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="experience">Experience</label>
+                    <textarea id="experience" name="experience" rows="4" placeholder="Describe your previous volunteer experience..." required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">Submit</button>
+            </form>
+
+            <div id="successMessage" class="success-message" style="display: none;">
+                Registration successful! Thank you for volunteering.
+            </div>
+        </div>
+    </div>
+
+    <script src="uservolunteer.js"></script>
+</body>
+</html>

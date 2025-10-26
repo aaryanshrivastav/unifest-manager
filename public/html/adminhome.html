@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin Home</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body data-page="admin-home">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container nav">
+      <div class="brand"><span class="logo">U</span> Unifest Admin</div>
+      <nav class="nav-links">
+        <a href="adminhome.html" class="active">Home</a>
+        <a href="adminapproval.html">Approvals</a>
+        <a href="adminlist.html">List</a>
+        <a href="#" id="logoutBtn">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container admin-container">
+    <div class="card">
+      <h2 class="section-title">Admin Dashboard</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">Profile</div>
+          <div class="info-value">Admin Name</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Event Approvals</div>
+          <div class="info-value">12</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Volunteer Approvals</div>
+          <div class="info-value">8</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Venue Count</div>
+          <div class="info-value">5</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Coordinator Count</div>
+          <div class="info-value">7</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Volunteer Count</div>
+          <div class="info-value">30</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    document.getElementById('logoutBtn').addEventListener('click', e => {
+      e.preventDefault();
+      // Replace with actual Auth logout
+      alert('Logged out');
+      window.location.href = 'login.html';
+    });
+  </script>
+</body>
+<!-- FOOTER -->
+<footer>
+  <p>
+    Developed by 
+    <a href="https://github.com/mitalisaxena" target="_blank"><strong>Mitali Saxena</strong></a>, 
+    <a href="https://github.com/aarushi-chaudhary" target="_blank"><strong>Aarushi Chaudhary</strong></a>, and 
+    <a href="https://github.com/aaryanshrivastav" target="_blank"><strong>Aaryan Shrivastav</strong></a> | Batch 4
+  </p>
+  <p>
+    <a href="https://github.com/" target="_blank">Project GitHub Repository</a>
+    <a href="https://in.linkedin.com/" target="_blank">linkedin</a>
+  </p>
+</footer>
+
+</html>

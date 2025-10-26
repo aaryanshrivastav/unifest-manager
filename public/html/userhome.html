@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>My Profile - Unifest</title>
+  <link rel="stylesheet" href="userhome.css">
+</head>
+<body data-page="profile">
+  <header class="header">
+    <div class="container nav">
+      <div class="brand"><span class="logo">U</span> Unifest</div>
+      <nav class="nav-links">
+        <a href="userhome.html" class="active">Home</a>
+        <a href="userevents.html">Events</a>
+        <a href="usermyevents.html">My Events</a>
+        <a href="uservolunteer.html">Volunteer</a>
+        <a href="#" id="logoutBtn">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container profile-container">
+    <div class="card">
+      <div class="profile-header">
+        <div class="profile-avatar" id="userAvatar">U</div>
+        <div class="profile-info">
+          <h1 id="userName">User Name</h1>
+          <p id="userEmail">—</p>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">First Name</div>
+          <div class="info-value" id="userFirstName">—</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Last Name</div>
+          <div class="info-value" id="userLastName">—</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Email</div>
+          <div class="info-value" id="userEmailInfo">—</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Phone Number</div>
+          <div class="info-value" id="userPhone">—</div>
+        </div>
+      </div>
+
+      <h2 class="section-title">My Registered Events</h2>
+      
+      <div id="eventsContainer" class="events-list">
+        <!-- Events will be loaded here -->
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="js/userhome.js"></script>
+</body>
+</html>

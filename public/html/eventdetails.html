@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Event Details - Unifest</title>
+  <link rel="stylesheet" href="eventdetails.css">
+</head>
+<body data-page="eventdetails">
+  <header class="header">
+    <div class="container nav">
+      <div class="brand"><span class="logo">U</span> Unifest</div>
+      <nav class="nav-links">
+        <a href="userhome.html">Home</a>
+        <a href="userevents.html">Events</a>
+        <a href="#" class="active">Event Details</a>
+        <a href="#" id="logoutBtn">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container profile-container">
+    <div class="card">
+      <h1 id="eventTitle">Event Title</h1>
+      <p id="eventDescription" class="small">Loading event details...</p>
+
+      <div class="info-grid">
+        <div class="info-item"><div class="info-label">Date</div><div class="info-value" id="eventDate">—</div></div>
+        <div class="info-item"><div class="info-label">Venue</div><div class="info-value" id="eventVenue">—</div></div>
+        <div class="info-item"><div class="info-label">Category</div><div class="info-value" id="eventCategory">—</div></div>
+        <div class="info-item"><div class="info-label">Coordinator</div><div class="info-value" id="eventCoord">—</div></div>
+      </div>
+
+      <h2 class="section-title">Volunteer Shifts</h2>
+      <div id="shiftContainer" class="events-list"></div>
+
+      <div class="actions">
+        <button class="btn primary" id="registerEvent">Register</button>
+        <button class="btn ghost" id="applyVolunteer">Apply as Volunteer</button>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="js/eventdetails.js"></script>
+</body>
+</html>

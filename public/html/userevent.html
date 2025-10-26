@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Events - Unifest</title>
+  <link rel="stylesheet" href="userevent.css">
+</head>
+<body data-page="events">
+  <header class="header">
+    <div class="container nav">
+      <div class="brand"><span class="logo">U</span> Unifest</div>
+      <nav class="nav-links">
+        <a href="userhome.html">Home</a>
+        <a href="userevent.html" class="active">Events</a>
+        <a href="usermyevent.html">My Events</a>
+        <a href="uservolunteer.html">Volunteer</a>
+        <a href="#" id="logoutBtn">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="page-header">
+      <h1>All Events</h1>
+      <p>Browse and register for upcoming events</p>
+    </div>
+
+    <div class="filters">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search events..." class="search-input">
+      </div>
+      <div class="filter-buttons">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="technical">Technical</button>
+        <button class="filter-btn" data-filter="cultural">Cultural</button>
+        <button class="filter-btn" data-filter="sports">Sports</button>
+      </div>
+    </div>
+
+    <div id="eventsGrid" class="events-grid">
+      <!-- Events will be loaded here -->
+    </div>
+
+    <div id="noEvents" class="no-events" style="display: none;">
+      <p>No events found.</p>
+    </div>
+  </main>
+
+  <script type="module" src="js/userevent.js"></script>
+</body>
+</html>

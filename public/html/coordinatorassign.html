@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Assign Volunteers - Coordinator</title>
+  <link rel="stylesheet" href="coordinatorassign.css">
+</head>
+<body data-page="assign">
+  <header class="header">
+    <div class="container nav">
+      <div class="brand"><span class="logo">U</span> Unifest</div>
+      <nav class="nav-links">
+        <a href="coordinatorhome.html">Home</a>
+        <a href="coordinatorassign.html" class="active">Assign</a>
+        <a href="coordinatorshift.html">Shift</a>
+        <a href="coordinatorlist.html">List</a>
+        <a href="#" id="logoutBtn">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container profile-container">
+    <div class="card">
+      <h2 class="section-title">Assign Volunteers to Event</h2>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <label class="info-label" for="eventSelect">Select Event</label>
+          <select id="eventSelect" class="info-value"></select>
+        </div>
+      </div>
+
+      <div id="volunteerList" class="events-list"></div>
+    </div>
+  </main>
+
+  <script type="module" src="js/coordinatorassign.js"></script>
+</body>
+<!-- FOOTER -->
+<footer>
+  <p>
+    Developed by 
+    <a href="https://github.com/mitalisaxena" target="_blank"><strong>Mitali Saxena</strong></a>, 
+    <a href="https://github.com/aarushi-chaudhary" target="_blank"><strong>Aarushi Chaudhary</strong></a>, and 
+    <a href="https://github.com/aaryanshrivastav" target="_blank"><strong>Aaryan Shrivastav</strong></a> | Batch 4
+  </p>
+  <p>
+    <a href="https://github.com/" target="_blank">Project GitHub Repository</a>
+    <a href="https://in.linkedin.com/" target="_blank">linkedin</a>
+  </p>
+</footer>
+</html>

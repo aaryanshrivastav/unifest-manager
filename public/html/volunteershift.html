@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Volunteer Shifts | Unifest Manager</title>
+  <link rel="stylesheet" href="volunteershift.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="logo.png" alt="logo" />
+      <span>Unifest Manager</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="volunteerhome.html">Volunteer Home</a></li>
+      <li><a href="volunteerevent.html">My Events</a></li>
+      <li><a href="volunteershift.html" class="active">My Shifts</a></li>
+      <li><a href="logout.html">Logout</a></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    <h1 class="page-title">My Assigned Shifts</h1>
+    <div id="shift-list" class="shift-list">
+      <div class="loading">Loading assigned shifts...</div>
+    </div>
+  </main>
+
+  <script src="volunteershift.js"></script>
+</body>
+</html>

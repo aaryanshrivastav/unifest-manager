@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sign Up - Unifest</title>
+  <link rel="stylesheet" href="signup.css">
+</head>
+<body data-page="signup">
+  <header class="header">
+    <div class="container nav">
+      <div class="brand"><span class="logo">U</span> Unifest</div>
+      <nav class="nav-links"><a href="landingpage.html">Back</a></nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="card" style="max-width:520px;margin:1.5rem auto">
+      <h2>Create Your Account</h2>
+      <form id="signupForm" class="form">
+        <label>First Name
+          <input id="first_name" type="text" class="input" required>
+        </label>
+        
+        <label>Last Name
+          <input id="last_name" type="text" class="input" required>
+        </label>
+        
+        <label>Email
+          <input id="email" type="email" class="input" required>
+        </label>
+        
+        <label>Phone Number
+          <input id="phone" type="tel" class="input" required>
+        </label>
+        
+        <label>Password
+          <input id="password" type="password" class="input" required minlength="8">
+        </label>
+        
+        <label>Confirm Password
+          <input id="confirm_password" type="password" class="input" required minlength="8">
+        </label>
+        
+        <div class="row">
+          <button class="btn primary" type="submit">Sign Up</button>
+          <a class="btn ghost" href="events.html">Cancel</a>
+        </div>
+        
+        <div id="signupMsg" role="status" class="note"></div>
+        
+        <p style="text-align:center;margin-top:1rem;font-size:0.9rem">
+          Already have an account? <a href="login.html" style="color:#6366f1">Log in</a>
+        </p>
+      </form>
+    </div>
+  </main>
+
+  <script type="module" src="js/signup.js"></script>
+</body>
+</html>
