@@ -4,7 +4,26 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>My Profile - Unifest</title>
-  <link rel="stylesheet" href="userhome.css">
+  <link rel="stylesheet" href="../css/userhome.css">
+  <script>
+    // Authentication check
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    if (!token || !user) {
+      window.location.href = '/html/login.html';
+    } else {
+      const userData = JSON.parse(user);
+      if (userData.role !== 'ROLE_USER') {
+        const roleRoutes = {
+          'ROLE_ADMIN': '/html/adminhome.html',
+          'ROLE_COORDINATOR': '/html/coordinatorhome.html',
+          'ROLE_FACULTY': '/html/facultyhome.html',
+          'ROLE_VOLUNTEER': '/html/volunteerhome.html'
+        };
+        window.location.href = roleRoutes[userData.role] || '/html/login.html';
+      }
+    }
+  </script>
 </head>
 <body data-page="profile">
   <header class="header">
@@ -57,6 +76,80 @@
     </div>
   </main>
 
-  <script type="module" src="js/userhome.js"></script>
+  <script>
+    // Load user data
+    const userData = JSON.parse(localStorage.getItem('user'));
+    document.getElementById('userName').textContent = `${userData.first_name} ${userData.last_name}`;
+    document.getElementById('userEmail').textContent = userData.email;
+    document.getElementById('userFirstName').textContent = userData.first_name;
+    document.getElementById('userLastName').textContent = userData.last_name;
+    document.getElementById('userEmailInfo').textContent = userData.email;
+    document.getElementById('userPhone').textContent = userData.phone || '—';
+    document.getElementById('userAvatar').textContent = userData.first_name[0].toUpperCase();
+
+    // Load registered events
+    async function loadRegisteredEvents() {
+      try {
+        const response = await fetch('/user/events', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to load events');
+        }
+
+        const events = await response.json();
+        const container = document.getElementById('eventsContainer');
+        
+        if (events.length === 0) {
+          container.innerHTML = '<p class="note">You haven\'t registered for any events yet.</p>';
+          return;
+        }
+
+        container.innerHTML = events.map(event => `
+          <div class="event-card">
+            <div class="event-details">
+              <h3>${event.event_name}</h3>
+              <p>${new Date(event.event_date).toLocaleDateString()}</p>
+              <p>${event.venue_name}</p>
+            </div>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('Error loading events:', error);
+        document.getElementById('eventsContainer').innerHTML = 
+          '<p class="note error">Failed to load events. Please try again later.</p>';
+      }
+    }
+
+    // Handle logout
+    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        const response = await fetch('/auth/logout', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+
+        // Clear local storage regardless of response
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/html/login.html';
+      } catch (error) {
+        console.error('Logout error:', error);
+        // Still clear storage and redirect on error
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/html/login.html';
+      }
+    });
+
+    // Load events when page loads
+    loadRegisteredEvents();
+  </script>
 </body>
 </html>

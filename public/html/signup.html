@@ -4,7 +4,23 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Sign Up - Unifest</title>
-  <link rel="stylesheet" href="signup.css">
+  <link rel="stylesheet" href="../css/signup.css">
+  <script>
+    // Check if user is already logged in
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    if (token && user) {
+      const userData = JSON.parse(user);
+      const roleRoutes = {
+        'ROLE_ADMIN': '/html/adminhome.html',
+        'ROLE_COORDINATOR': '/html/coordinatorhome.html',
+        'ROLE_FACULTY': '/html/facultyhome.html',
+        'ROLE_VOLUNTEER': '/html/volunteerhome.html',
+        'ROLE_USER': '/html/userhome.html'
+      };
+      window.location.href = roleRoutes[userData.role] || '/html/userhome.html';
+    }
+  </script>
 </head>
 <body data-page="signup">
   <header class="header">
@@ -44,18 +60,81 @@
         
         <div class="row">
           <button class="btn primary" type="submit">Sign Up</button>
-          <a class="btn ghost" href="events.html">Cancel</a>
+          <a class="btn ghost" href="landingpage.html">Cancel</a>
         </div>
         
         <div id="signupMsg" role="status" class="note"></div>
         
         <p style="text-align:center;margin-top:1rem;font-size:0.9rem">
-          Already have an account? <a href="login.html" style="color:#6366f1">Log in</a>
+          Already have an account? <a href="./login.html" style="color:#6366f1">Log in</a>
         </p>
       </form>
     </div>
   </main>
 
-  <script type="module" src="js/signup.js"></script>
+  <script>
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm_password').value;
+      const messageElement = document.getElementById('signupMsg');
+      messageElement.textContent = '';
+      messageElement.style.color = '';
+
+      if (password !== confirmPassword) {
+        messageElement.textContent = 'Passwords do not match';
+        messageElement.style.color = 'red';
+        return;
+      }
+
+      const userData = {
+        first_name: document.getElementById('first_name').value.trim(),
+        last_name: document.getElementById('last_name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        password: password
+      };
+
+      try {
+        const response = await fetch('/auth/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(userData)
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.message || 'Registration failed');
+        }
+
+        // Store token and user data
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+
+        // Show success message
+        messageElement.textContent = 'Registration successful! Redirecting...';
+        messageElement.style.color = 'green';
+
+        // Redirect based on role
+        setTimeout(() => {
+          const roleRoutes = {
+            'ROLE_ADMIN': '/html/adminhome.html',
+            'ROLE_COORDINATOR': '/html/coordinatorhome.html',
+            'ROLE_FACULTY': '/html/facultyhome.html',
+            'ROLE_VOLUNTEER': '/html/volunteerhome.html',
+            'ROLE_USER': '/html/userhome.html'
+          };
+          window.location.href = roleRoutes[data.user.role] || '/html/userhome.html';
+        }, 1500);
+      } catch (error) {
+        messageElement.textContent = error.message;
+        messageElement.style.color = 'red';
+      }
+    });
+  </script>
 </body>
 </html>

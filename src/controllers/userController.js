@@ -1,36 +1,39 @@
 import { getConnection } from "../config/db.js";
+import oracledb from 'oracledb';
 
 // 1️⃣ Home: profile + 5 events registered
-export const getHome = async (req, res) => {
+export const getProfile = async (req, res) => {
   try {
     const { user_id } = req.params;
     const connection = await getConnection();
 
     const userResult = await connection.execute(
-      `SELECT user_id, name, email, role 
+      `SELECT user_id, first_name, last_name, email, phone, role_type 
        FROM users WHERE user_id = :user_id`,
-      { user_id }
-    );
-
-    const eventsResult = await connection.execute(
-      `SELECT e.event_id, e.event_name, e.start_time 
-       FROM registrations r
-       JOIN events e ON r.event_id = e.event_id
-       WHERE r.user_id = :user_id
-       FETCH FIRST 5 ROWS ONLY`,
-      { user_id }
+      { user_id },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
     );
 
     await connection.close();
 
     if (!userResult.rows.length)
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ 
+        success: false, 
+        message: "User not found" 
+      });
 
-    const [userId, name, email, role] = userResult.rows[0];
-
+    const user = userResult.rows[0];
+    
     res.status(200).json({
-      user: { user_id: userId, name, email, role },
-      events: eventsResult.rows,
+      success: true,
+      user: {
+        user_id: user.USER_ID,
+        first_name: user.FIRST_NAME,
+        last_name: user.LAST_NAME,
+        email: user.EMAIL,
+        phone: user.PHONE,
+        role: user.ROLE_TYPE
+      }
     });
   } catch (err) {
     console.error(err);
@@ -59,19 +62,37 @@ export const getMyEvents = async (req, res) => {
     const connection = await getConnection();
 
     const result = await connection.execute(
-      `SELECT e.event_id, e.event_name, e.start_time 
+      `SELECT e.event_id, e.event_name, e.start_time as event_date, 
+              e.venue as event_location, r.registration_type, r.team_name
        FROM registrations r
        JOIN events e ON r.event_id = e.event_id
-       WHERE r.user_id = :user_id`,
-      { user_id }
+       WHERE r.user_id = :user_id
+       ORDER BY e.start_time DESC`,
+      { user_id },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
     );
 
     await connection.close();
 
-    res.status(200).json({ events: result.rows });
+    const registrations = result.rows.map(reg => ({
+      event_id: reg.EVENT_ID,
+      event_name: reg.EVENT_NAME,
+      event_date: reg.EVENT_DATE,
+      event_location: reg.EVENT_LOCATION,
+      registration_type: reg.REGISTRATION_TYPE,
+      team_name: reg.TEAM_NAME
+    }));
+
+    res.status(200).json({ 
+      success: true, 
+      registrations 
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error fetching user events" });
+    res.status(500).json({ 
+      success: false, 
+      message: "Error fetching user events" 
+    });
   }
 };
 

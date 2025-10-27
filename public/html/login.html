@@ -1,9 +1,26 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Login - Unifest</title>
-  <link rel="stylesheet" href="login.css">
+  <link rel="stylesheet" href="../css/login.css">
+  <script>
+    // Check if user is already logged in
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    if (token && user) {
+      const userData = JSON.parse(user);
+      const roleRoutes = {
+        'ADMIN': '/html/adminhome.html',
+        'COORDINATOR': '/html/coordinatorhome.html',
+        'FACULTY': '/html/facultyhome.html',
+        'VOLUNTEER': '/html/volunteerhome.html',
+        'USER': '/html/userhome.html'
+      };
+      window.location.href = roleRoutes[userData.role] || '/html/login.html';
+    }
+  </script>
 </head>
 <body data-page="login">
   <header class="header">
@@ -22,10 +39,55 @@
         <button class="btn primary" type="submit">Login</button>
         <div id="loginError" role="alert" style="color:var(--danger);"></div>
       </form>
-      <p class="note">Demo users: backend must provide roles (admin/organizer/volunteer/student).</p>
+      <p>Don't have an account? <a href="signup.html">Sign up</a></p>
     </div>
   </main>
 
-  <script type="module" src="js/login.js"></script>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const errorElement = document.getElementById('loginError');
+      errorElement.textContent = '';
+      
+      try {
+        const response = await fetch('/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+        console.log('Server response:', data);
+        
+        if (!response.ok) {
+          throw new Error(data.message || 'Login failed');
+        }
+
+        // Store token and user data
+        console.log('Setting token:', data.token);
+        console.log('Setting user:', data.user);
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+
+        // Redirect based on role
+        const roleRoutes = {
+          'ADMIN': '/html/adminhome.html',
+          'COORDINATOR': '/html/coordinatorhome.html',
+          'FACULTY': '/html/facultyhome.html',
+          'VOLUNTEER': '/html/volunteerhome.html',
+          'USER': '/html/userhome.html'
+        };
+
+        window.location.href = roleRoutes[data.user.role] || '/html/userhome.html';
+      } catch (error) {
+        errorElement.textContent = error.message;
+      }
+    });
+  </script>
 </body>
 </html>
