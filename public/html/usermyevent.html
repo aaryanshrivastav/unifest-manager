@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Events - Unifest Manager</title>
-    <link rel="stylesheet" href="usermyevent.css">
+    <link rel="stylesheet" href="../css/usermyevent.css">
 </head>
 <body>
     <nav class="navbar">
@@ -18,10 +18,10 @@
             <span class="brand-name">Unifest Manager</span>
         </div>
         <div class="nav-links">
-            <a href="userhome.html">Home</a>
-            <a href="userevents.html">Events</a>
-            <a href="usermyevent.html" class="active">My Events</a>
-            <a href="uservolunteer.html">Volunteer</a>
+            <a href="./userhome.html">Home</a>
+            <a href="./userevent.html">Events</a>
+            <a href="./usermyevent.html" class="active">My Events</a>
+            <a href="./uservolunteer.html">Volunteer</a>
         </div>
     </nav>
 
@@ -72,6 +72,93 @@
         </div>
     </div>
 
-    <script src="usermyevent.js"></script>
+        <script>
+            (function() {
+                const token = localStorage.getItem('token');
+                const userRaw = localStorage.getItem('user');
+                if (!token || !userRaw) {
+                    window.location.href = '/html/login.html';
+                    return;
+                }
+                const user = JSON.parse(userRaw);
+                if (user.role !== 'USER') {
+                    window.location.href = '/html/login.html';
+                    return;
+                }
+
+                const userNameEl = document.getElementById('userName');
+                const container = document.getElementById('eventsContainer');
+                const noEventsBox = document.getElementById('noEvents');
+                const totalEvents = document.getElementById('totalEvents');
+                const upcomingEvents = document.getElementById('upcomingEvents');
+
+                function field(obj, ...keys) {
+                    for (const k of keys) if (obj[k] !== undefined) return obj[k];
+                    return undefined;
+                }
+
+                function renderRegistrations(regs) {
+                    if (!regs || regs.length === 0) {
+                        container.innerHTML = '';
+                        noEventsBox.style.display = '';
+                        totalEvents.textContent = '0';
+                        upcomingEvents.textContent = '0';
+                        return;
+                    }
+                    noEventsBox.style.display = 'none';
+                    const now = Date.now();
+                    let upcomingCount = 0;
+                    container.innerHTML = regs.map(r => {
+                        const name = field(r, 'event_name', 'EVENT_NAME', 'name') || 'Event';
+                        const dateRaw = field(r, 'event_date', 'EVENT_DATE', 'start_time') || r.event_date;
+                        const date = dateRaw ? new Date(dateRaw).toLocaleString() : 'TBD';
+                        const status = dateRaw ? (new Date(dateRaw) > now ? 'upcoming' : 'completed') : 'unknown';
+                        if (status === 'upcoming') upcomingCount++;
+                        return `
+                            <div class="event-card">
+                                <h3>${name}</h3>
+                                <p class="meta">${date} • <strong>${status}</strong></p>
+                            </div>
+                        `;
+                    }).join('');
+                    totalEvents.textContent = regs.length;
+                    upcomingEvents.textContent = upcomingCount;
+                }
+
+                async function loadMyEvents() {
+                    try {
+                        const res = await fetch(`/user/${user.user_id}/my-events`, { headers: { Authorization: `Bearer ${token}` } });
+                        if (!res.ok) {
+                            const t = await res.text();
+                            throw new Error(`${res.status} ${t}`);
+                        }
+                        const body = await res.json();
+                        // body likely: { success: true, registrations: [...] }
+                        const regs = body.registrations || body;
+                        userNameEl.textContent = `${user.first_name} ${user.last_name}`;
+                        renderRegistrations(regs || []);
+                    } catch (err) {
+                        console.error('Error loading my events:', err);
+                        container.innerHTML = `<div class="error">Failed to load events: ${err.message}</div>`;
+                    }
+                }
+
+                document.querySelectorAll('.nav-links a[href="./usermyevent.html"]').forEach(a => a.classList.add('active'));
+
+                // Logout hookup (if present)
+                const logout = document.getElementById('logoutBtn');
+                if (logout) {
+                    logout.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        try { await fetch('/auth/logout', { method: 'POST', headers: { Authorization: `Bearer ${token}` } }); } catch(e){/*ignore*/}
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        window.location.href = '/html/login.html';
+                    });
+                }
+
+                loadMyEvents();
+            })();
+        </script>
 </body>
 </html>

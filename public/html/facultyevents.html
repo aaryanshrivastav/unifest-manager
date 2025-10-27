@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Faculty Events - Unifest</title>
-  <link rel="stylesheet" href="facultyevents.css">
+  <link rel="stylesheet" href="../css/facultyevents.css">
 </head>
 <body data-page="facultyevents">
   <header class="header">
@@ -26,7 +26,95 @@
     </div>
   </main>
 
-  <script type="module" src="js/facultyevents.js"></script>
+  <script>
+    // Check if user is logged in and is a faculty
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user'));
+    
+    if (!token || !user || user.role !== 'FACULTY') {
+      window.location.href = 'login.html';
+    }
+
+    // Handle logout
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    });
+
+    // Format date function
+    function formatDate(dateString) {
+      if (!dateString) return 'Not set';
+      // Oracle returns dates in a specific format, we need to parse it correctly
+      const date = new Date(dateString);
+      return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    // Get status badge class
+    function getStatusBadgeClass(status) {
+      switch(status.toUpperCase()) {
+        case 'APPROVED': return 'badge-success';
+        case 'PENDING': return 'badge-warning';
+        case 'REJECTED': return 'badge-danger';
+        default: return 'badge-secondary';
+      }
+    }
+
+    // Fetch all faculty events
+    async function loadFacultyEvents() {
+      try {
+        const response = await fetch(`/faculty/${user.user_id}/events`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to load events');
+        }
+
+        // Render events
+        const eventsContainer = document.getElementById('eventsContainer');
+        if (data.events.length === 0) {
+          eventsContainer.innerHTML = '<p class="no-events">No events found</p>';
+        } else {
+          console.log('Events data:', data.events); // Debug log
+          eventsContainer.innerHTML = data.events.map(event => {
+            console.log('Processing event:', event); // Debug individual event
+            return `
+              <div class="event-card">
+                <div class="event-header">
+                  <h3>${event.EVENT_NAME || event.event_name}</h3>
+                  <span class="badge ${getStatusBadgeClass(event.APPROVAL_STATUS || event.approval_status)}">
+                    ${event.APPROVAL_STATUS || event.approval_status || 'PENDING'}
+                  </span>
+                </div>
+                <div class="event-times">
+                  <p>Start: ${formatDate(event.START_TIME || event.start_time)}</p>
+                  <p>End: ${formatDate(event.END_TIME || event.end_time)}</p>
+                </div>
+                <a href="eventdetails.html?id=${event.EVENT_ID || event.event_id}" class="btn view-details">View Details</a>
+              </div>
+            `;
+          }).join('');
+        }
+      } catch (error) {
+        alert(error.message || 'An error occurred while loading events');
+      }
+    }
+
+    // Load events when page loads
+    loadFacultyEvents();
+  </script>
 </body>
 <!-- FOOTER -->
 <footer>

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Register Event - Faculty</title>
-  <link rel="stylesheet" href="facultyregister.css">
+  <link rel="stylesheet" href="../css/facultyregister.css">
 </head>
 <body data-page="register">
   <header class="header">
@@ -37,12 +37,23 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label for="eventStart">Start Time</label>
-          <input type="time" id="eventStart" required>
+          <label for="eventStartDate">Event Start Date</label>
+          <input type="date" id="eventStartDate" required>
         </div>
         <div class="form-group">
-          <label for="eventEnd">End Time</label>
-          <input type="time" id="eventEnd" required>
+          <label for="eventStartTime">Event Start Time</label>
+          <input type="time" id="eventStartTime" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="eventEndDate">Event End Date</label>
+          <input type="date" id="eventEndDate" required>
+        </div>
+        <div class="form-group">
+          <label for="eventEndTime">Event End Time</label>
+          <input type="time" id="eventEndTime" required>
         </div>
       </div>
 
@@ -82,7 +93,117 @@
 </main>
 
 
-  <script type="module" src="js/facultyregister.js"></script>
+  <script>
+    // Check if user is logged in and is a faculty
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user'));
+    
+    if (!token || !user || user.role !== 'FACULTY') {
+      window.location.href = 'login.html';
+    }
+
+    // Handle logout
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    });
+
+    // Handle form submission
+    document.getElementById('eventForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      // Format date function to match Oracle's expected format
+      function formatDate(dateStr, timeStr) {
+        const date = new Date(dateStr);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year} ${timeStr}`;
+      }
+
+      const eventStartDate = document.getElementById('eventStartDate').value;
+      const eventStartTime = document.getElementById('eventStartTime').value;
+      const eventEndDate = document.getElementById('eventEndDate').value;
+      const eventEndTime = document.getElementById('eventEndTime').value;
+      const regStartDate = document.getElementById('regStart').value;
+      const regEndDate = document.getElementById('regEnd').value;
+
+      const eventData = {
+        event_name: document.getElementById('eventName').value,
+        description: document.getElementById('eventDesc').value,
+        start_time: formatDate(eventStartDate, eventStartTime),
+        end_time: formatDate(eventEndDate, eventEndTime),
+        registration_start: formatDate(regStartDate, '00:00'),
+        registration_end: formatDate(regEndDate, '23:59'),
+        max_participants: parseInt(document.getElementById('maxParticipants').value),
+        fees: parseFloat(document.getElementById('eventFees').value),
+        venue_id: document.getElementById('eventVenue').value
+      };
+
+      try {
+        const response = await fetch(`/faculty/${user.user_id}/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(eventData)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to register event');
+        }
+
+        alert('Event registered successfully!');
+        window.location.href = 'facultyevents.html';
+      } catch (error) {
+        alert(error.message || 'An error occurred while registering the event');
+      }
+    });
+
+    // Set min dates for registration fields
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('regStart').min = today;
+    document.getElementById('regEnd').min = today;
+
+    // Validate event end date/time is after start date/time
+    function validateEventDates() {
+      const startDate = document.getElementById('eventStartDate').value;
+      const startTime = document.getElementById('eventStartTime').value;
+      const endDate = document.getElementById('eventEndDate').value;
+      const endTime = document.getElementById('eventEndTime').value;
+
+      if (startDate && startTime && endDate && endTime) {
+        const startDateTime = new Date(`${startDate}T${startTime}`);
+        const endDateTime = new Date(`${endDate}T${endTime}`);
+
+        if (endDateTime <= startDateTime) {
+          alert('Event end date/time must be after start date/time');
+          document.getElementById('eventEndDate').value = '';
+          document.getElementById('eventEndTime').value = '';
+          return false;
+        }
+      }
+      return true;
+    }
+
+    document.getElementById('eventEndDate').addEventListener('change', validateEventDates);
+    document.getElementById('eventEndTime').addEventListener('change', validateEventDates);
+
+    // Validate registration end date is after start date
+    document.getElementById('regEnd').addEventListener('change', (e) => {
+      const startDate = document.getElementById('regStart').value;
+      const endDate = e.target.value;
+      if (startDate && endDate < startDate) {
+        alert('Registration end date must be after start date');
+        e.target.value = '';
+      }
+    });
+  </script>
 </body>
 <!-- FOOTER -->
 <footer>

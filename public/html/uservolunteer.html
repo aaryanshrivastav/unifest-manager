@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Volunteer Registration - Unifest Manager</title>
-    <link rel="stylesheet" href="uservolunteer.css">
+    <link rel="stylesheet" href="../css/uservolunteer.css">
 </head>
 <body>
     <nav class="navbar">
@@ -18,9 +18,9 @@
             <span class="brand-name">Unifest Manager</span>
         </div>
         <div class="nav-links">
-            <a href="userhome.html">Home</a>
-            <a href="userevent.html">Events</a>
-            <a href="usermyevent.html">My Events</a>
+            <a href="./userhome.html">Home</a>
+            <a href="./userevent.html">Events</a>
+            <a href="./usermyevent.html">My Events</a>
         </div>
     </nav>
 
@@ -59,6 +59,56 @@
         </div>
     </div>
 
-    <script src="uservolunteer.js"></script>
+        <script>
+            (function() {
+                const token = localStorage.getItem('token');
+                const userRaw = localStorage.getItem('user');
+                if (!token || !userRaw) {
+                    window.location.href = '/html/login.html';
+                    return;
+                }
+                const user = JSON.parse(userRaw);
+                if (user.role !== 'USER') {
+                    window.location.href = '/html/login.html';
+                    return;
+                }
+
+                const form = document.getElementById('volunteerForm');
+                const success = document.getElementById('successMessage');
+
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('name').value.trim();
+                    const year = document.getElementById('year').value;
+                    const experience = document.getElementById('experience').value.trim();
+
+                    // Compose a description for backend
+                    const description = `Name: ${name}; Year: ${year}; Experience: ${experience}`;
+
+                    try {
+                        const res = await fetch(`/user/${user.user_id}/application`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({ role_id: 'VOLUNTEER', description })
+                        });
+
+                        if (!res.ok) {
+                            const t = await res.text();
+                            throw new Error(t || `Server returned ${res.status}`);
+                        }
+
+                        // show success
+                        success.style.display = '';
+                        form.reset();
+                    } catch (err) {
+                        console.error('Volunteer submit error:', err);
+                        alert('Failed to submit application: ' + (err.message || err));
+                    }
+                });
+            })();
+        </script>
 </body>
 </html>

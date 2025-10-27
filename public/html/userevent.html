@@ -4,17 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Events - Unifest</title>
-  <link rel="stylesheet" href="userevent.css">
+  <link rel="stylesheet" href="../css/userevent.css">
 </head>
 <body data-page="events">
   <header class="header">
     <div class="container nav">
       <div class="brand"><span class="logo">U</span> Unifest</div>
       <nav class="nav-links">
-        <a href="userhome.html">Home</a>
-        <a href="userevent.html" class="active">Events</a>
-        <a href="usermyevent.html">My Events</a>
-        <a href="uservolunteer.html">Volunteer</a>
+        <a href="./userhome.html">Home</a>
+        <a href="./userevent.html" class="active">Events</a>
+        <a href="./usermyevent.html">My Events</a>
+        <a href="./uservolunteer.html">Volunteer</a>
         <a href="#" id="logoutBtn">Logout</a>
       </nav>
     </div>
@@ -47,6 +47,121 @@
     </div>
   </main>
 
-  <script type="module" src="js/userevent.js"></script>
+  <script>
+    // Inline events loader (no external js)
+    (function() {
+      const token = localStorage.getItem('token');
+      const userRaw = localStorage.getItem('user');
+      if (!token || !userRaw) {
+        window.location.href = '/html/login.html';
+        return;
+      }
+
+      const user = JSON.parse(userRaw);
+      if (user.role !== 'USER') {
+        const roleRoutes = { ADMIN: '/html/adminhome.html', COORDINATOR: '/html/coordinatorhome.html', FACULTY: '/html/facultyhome.html', VOLUNTEER: '/html/volunteerhome.html' };
+        window.location.href = roleRoutes[user.role] || '/html/login.html';
+        return;
+      }
+
+      const eventsGrid = document.getElementById('eventsGrid');
+      const noEvents = document.getElementById('noEvents');
+      const searchInput = document.getElementById('searchInput');
+      const filterButtons = Array.from(document.querySelectorAll('.filter-btn'));
+
+      function field(event, ...candidates) {
+        for (const c of candidates) {
+          if (event[c] !== undefined) return event[c];
+        }
+        return undefined;
+      }
+
+      function renderCards(events) {
+        if (!events || events.length === 0) {
+          eventsGrid.innerHTML = '';
+          noEvents.style.display = '';
+          return;
+        }
+        noEvents.style.display = 'none';
+        eventsGrid.innerHTML = events.map(ev => {
+          const name = field(ev, 'event_name', 'EVENT_NAME', 'name') || 'Event';
+          const dateRaw = field(ev, 'event_date', 'START_TIME', 'start_time') || field(ev, 'start_time');
+          const date = dateRaw ? new Date(dateRaw).toLocaleDateString() : 'Date TBD';
+          const venue = field(ev, 'venue', 'VENUE', 'location') || '';
+          return `
+            <div class="event-card">
+              <div class="event-details">
+                <h3>${name}</h3>
+                <div class="event-meta">
+                  <span>📅 ${date}</span>
+                  <span>📍 ${venue}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // fetch all events for this user (controller exposes at /user/:user_id/events)
+      async function loadEvents() {
+        try {
+          const res = await fetch(`/user/${user.user_id}/events`, { headers: { Authorization: `Bearer ${token}` } });
+          if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Server error ${res.status}: ${txt}`);
+          }
+          const body = await res.json();
+          // body may be { events: [...] } or an array
+          const events = body.events || body;
+          renderCards(events || []);
+          // attach search/filter behavior
+          searchInput.addEventListener('input', () => {
+            const q = searchInput.value.trim().toLowerCase();
+            const filtered = (events || []).filter(ev => {
+              const name = (field(ev, 'event_name', 'EVENT_NAME', 'name') || '').toString().toLowerCase();
+              return name.includes(q);
+            });
+            renderCards(filtered);
+          });
+
+          filterButtons.forEach(btn => btn.addEventListener('click', (e) => {
+            filterButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const filter = btn.dataset.filter;
+            if (filter === 'all') {
+              renderCards(events || []);
+              return;
+            }
+            const filtered = (events || []).filter(ev => {
+              const category = (field(ev, 'category', 'type', 'EVENT_TYPE') || '').toString().toLowerCase();
+              return category.includes(filter);
+            });
+            renderCards(filtered);
+          }));
+
+        } catch (err) {
+          console.error('Error loading events:', err);
+          eventsGrid.innerHTML = `<div class="error">Failed to load events. ${err.message}</div>`;
+          noEvents.style.display = 'none';
+        }
+      }
+
+      // Logout
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+          await fetch('/auth/logout', { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+        } catch (err) {
+          console.warn('Logout request failed:', err);
+        } finally {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          window.location.href = '/html/login.html';
+        }
+      });
+
+      loadEvents();
+    })();
+  </script>
 </body>
 </html>

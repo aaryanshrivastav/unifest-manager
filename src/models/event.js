@@ -12,7 +12,7 @@ export async function createTable() {
       CREATE TABLE event (
         event_id VARCHAR2(20) PRIMARY KEY,
         event_name VARCHAR2(100) NOT NULL,
-        description CLOB,
+        description VARCHAR(400),
         start_time TIMESTAMP,
         end_time TIMESTAMP,
         registration_start DATE,
