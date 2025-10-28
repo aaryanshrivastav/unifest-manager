@@ -13,13 +13,11 @@ function generateLogId() {
   return 'LOG' + crypto.randomBytes(6).toString('hex').toUpperCase();
 }
 
-// REGISTER
 export async function registerUser(req, res) {
   const { first_name, last_name, email, phone, password, role_type = 'USER' } = req.body; // Default to USER role
   const connection = await getConnection();
 
   try {
-    // 1️⃣ Check for existing email
     const check = await connection.execute(
       `SELECT user_id FROM users WHERE email = :email`,
       [email]
@@ -28,11 +26,9 @@ export async function registerUser(req, res) {
       return res.status(400).json({ message: 'Email already registered' });
     }
 
-    // 2️⃣ Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
     const user_id = generateUserId();
 
-    // 3️⃣ Insert into USERS table
     await connection.execute(
       `INSERT INTO USERS (USER_ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE, PASSWORD, ROLE_TYPE)
        VALUES (:user_id, :first_name, :last_name, :email, :phone, :password, :role_type)`,
@@ -43,14 +39,12 @@ export async function registerUser(req, res) {
         email,
         phone,
         password: hashedPassword,
-        role_type, // ✅ Pass to query
+        role_type, 
       }
     );
 
-    // 4️⃣ Generate JWT token
     const token = generateToken({ user_id, email, role: 'USER' });
 
-    // 5️⃣ Add login record to LOG_HISTORY
     await connection.execute(
       `INSERT INTO log_history (log_id, user_id, action, ip_address)
        VALUES (:log_id, :user_id, :action, :ip_address)`,
@@ -64,7 +58,6 @@ export async function registerUser(req, res) {
 
     await connection.commit();
 
-    // 6️⃣ Return success response
     res.status(201).json({
       message: 'User registered & logged in successfully',
       token,
@@ -78,7 +71,6 @@ export async function registerUser(req, res) {
   }
 }
 
-// LOGIN
 export async function loginUser(req, res) {
   const { email, password } = req.body;
   const connection = await getConnection();
@@ -87,7 +79,7 @@ export async function loginUser(req, res) {
     const result = await connection.execute(
       `SELECT user_id, email, password, role_type, first_name, last_name, phone FROM users WHERE email = :email`,
       { email },
-      { outFormat: oracledb.OUT_FORMAT_OBJECT }   // ✅ Fix
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }   
     );
 
     if (result.rows.length === 0)
@@ -135,10 +127,8 @@ export async function loginUser(req, res) {
   }
 }
 
-
-// LOGOUT
 export async function logoutUser(req, res) {
-  const { user_id } = req.user; // user_id comes from decoded JWT
+  const { user_id } = req.user; 
   const connection = await getConnection();
 
   try {

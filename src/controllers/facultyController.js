@@ -50,21 +50,19 @@ export const getFacultyHome = async (req, res) => {
       events
     });
   } catch (err) {
-    console.error("❌ Faculty Home Error:", err);
+    console.error("Faculty Home Error:", err);
     res.status(500).json({ message: "Error fetching faculty home" });
   } finally {
     if (connection) {
       try {
         await connection.close();
       } catch (err) {
-        console.warn("⚠️ Error closing Oracle connection:", err.message);
+        console.warn("Error closing Oracle connection:", err.message);
       }
     }
   }
 };
 
-
-// 2️⃣ Register a new event
 export const registerEvent = async (req, res) => {
   try {
     const { faculty_id } = req.params;
@@ -73,12 +71,6 @@ export const registerEvent = async (req, res) => {
     const connection = await getConnection();
 
     const event_id = "EVE" + Math.floor(1000 + Math.random() * 9000);
-    console.log({
-  start_time,
-  end_time,
-  registration_start,
-  registration_end
-});
 
     await connection.execute(
       `INSERT INTO event (
@@ -107,7 +99,6 @@ export const registerEvent = async (req, res) => {
   }
 };
 
-// 3️⃣ All events by faculty
 export const getFacultyEvents = async (req, res) => {
   try {
     const { faculty_id } = req.params;

@@ -22,7 +22,6 @@ export const verifyUser = (req, res, next) => {
     const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Dynamic route validation — user must match
     if (req.params.user_id && req.params.user_id !== decoded.user_id)
       return res.status(403).json({ message: "Unauthorized access" });
 

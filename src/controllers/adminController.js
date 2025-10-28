@@ -76,7 +76,7 @@ export const getApprovals = async (req, res) => {
 
 export const getAdminLists = async (req, res) => {
   try {
-    const { type } = req.query; // type='events', 'venues', 'volunteers', 'coordinators', 'faculty'
+    const { type } = req.query; 
     const connection = await getConnection();
     let result;
 

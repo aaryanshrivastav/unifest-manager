@@ -29,7 +29,6 @@ export async function getEventDetails(req, res) {
       return res.status(404).json({ message: 'Event not found' });
     }
 
-    // Convert Oracle rows into JSON
     const event = result.rows[0];
     const eventData = {
       event_id: event[0],

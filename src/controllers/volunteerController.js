@@ -1,7 +1,6 @@
 import { getConnection } from "../config/db.js";
 import oracledb from "oracledb";
 
-// 1️⃣ Home: profile + events registered
 export const getVolunteerHome = async (req, res) => {
   try {
     const { volunteer_id } = req.params;
@@ -52,7 +51,6 @@ export const getVolunteerHome = async (req, res) => {
   }
 };
 
-// 2️⃣ All Events
 export const getVolunteerEvents = async (req, res) => {
   try {
     const connection = await getConnection();
@@ -78,7 +76,6 @@ export const getVolunteerEvents = async (req, res) => {
   }
 };
 
-// 3️⃣ Shift Info
 export const getVolunteerShifts = async (req, res) => {
   try {
     const { volunteer_id } = req.params;

@@ -1,7 +1,6 @@
 import { getConnection } from "../config/db.js";
 import oracledb from "oracledb";
 
-// 1️⃣ Home: profile + 5 events under them
 export const getCoordinatorHome = async (req, res) => {
   try {
     const { coordinator_id } = req.params;
@@ -50,15 +49,12 @@ export const getCoordinatorHome = async (req, res) => {
   }
 };
 
-// 2️⃣ Assign volunteers to an event
 export const assignVolunteers = async (req, res) => {
   try {
     const { coordinator_id } = req.params;
     const { event_id, volunteer_ids, role_id, shift_start, shift_end } = req.body;
 
     const connection = await getConnection();
-
-    // Assign each volunteer
     for (const volId of volunteer_ids) {
       await connection.execute(
         `INSERT INTO volunteer_assignment
@@ -85,7 +81,6 @@ export const assignVolunteers = async (req, res) => {
   }
 };
 
-// 3️⃣ Shifts for coordinator
 export const getCoordinatorShifts = async (req, res) => {
   try {
     const { coordinator_id } = req.params;
@@ -111,15 +106,12 @@ export const getCoordinatorShifts = async (req, res) => {
   }
 };
 
-// 4️⃣ List volunteers for a selected event
 export const getVolunteerList = async (req, res) => {
   try {
     const { coordinator_id } = req.params;
-    const { event_id } = req.query; // select event via dropdown
+    const { event_id } = req.query; 
 
     const connection = await getConnection();
-
-    // Assigned volunteers for this event
     const assignedResult = await connection.execute(
       `SELECT 
          u.user_id, u.first_name, u.last_name, u.email,
@@ -130,7 +122,6 @@ export const getVolunteerList = async (req, res) => {
       { event_id },
       { outFormat: oracledb.OUT_FORMAT_OBJECT }
     );
-    // Available volunteers (not yet assigned to this event)
     const availableResult = await connection.execute(
       `SELECT u.user_id, u.first_name, u.last_name, u.email
        FROM users u
