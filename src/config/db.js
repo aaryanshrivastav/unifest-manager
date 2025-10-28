@@ -1,4 +1,3 @@
-// src/config/db.js
 import oracledb from 'oracledb';
 import dotenv from 'dotenv';
 dotenv.config();

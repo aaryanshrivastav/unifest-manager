@@ -6,7 +6,6 @@
   <title>Login - Unifest</title>
   <link rel="stylesheet" href="../css/login.css">
   <script>
-    // Check if user is already logged in
     const token = localStorage.getItem('token');
     const user = localStorage.getItem('user');
     if (token && user) {
@@ -70,11 +69,9 @@
           throw new Error(data.message || 'Login failed');
         }
 
-        // Store token and user data
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
 
-        // Redirect based on role
         const roleRoutes = {
           'ADMIN': '/html/adminhome.html',
           'COORDINATOR': '/html/coordinatorhome.html',

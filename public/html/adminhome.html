@@ -53,7 +53,6 @@
   </main>
 
   <script type="module">
-    // Auth guard
     const aToken = localStorage.getItem('token');
     const aUser = JSON.parse(localStorage.getItem('user') || 'null');
     if (!aToken || !aUser) {
@@ -75,11 +74,7 @@
         const res = await fetch(`/admin/${aUser.user_id}/home`, { headers: { 'Authorization': `Bearer ${aToken}` } });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data.message || `Failed (${res.status})`);
-
-        // Profile
         setInfo('Profile', (data.admin?.name) || 'Admin');
-
-        // Counts: tolerate array or object
         const c = data.counts || {};
         const get = (obj, key, idx) => (obj && (obj[key] ?? (Array.isArray(obj) ? obj[idx] : undefined)));
         setInfo('Event Approvals', get(c, 'PENDING_EVENTS', 0) ?? '0');
@@ -89,7 +84,6 @@
         setInfo('Volunteer Count', get(c, 'TOTAL_VOLUNTEERS', 4) ?? '0');
         setInfo('Faculty Count', get(c, 'TOTAL_FACULTY', 5) ?? '0');
       } catch (e) {
-        // minimal fallback
       }
     }
 

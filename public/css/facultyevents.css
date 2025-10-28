@@ -4,7 +4,7 @@
   --primary-dark: #d97706;
   --bg-card: #2d3247;
 }
-/* Reset and Base Styles */
+
 * {
   margin: 0;
   padding: 0;
@@ -41,7 +41,6 @@ body {
   flex-direction: column;
 }
 
-/* Header */
 .header {
   background: var(--bg-primary);
   border-bottom: 1px solid var(--border);
