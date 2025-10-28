@@ -41,31 +41,55 @@
   </main>
 
   <script type="module">
+    // Auth
+    const aToken = localStorage.getItem('token');
+    const aUser = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!aToken || !aUser) {
+      window.location.href = '/html/login.html';
+    } else if (aUser.role !== 'ADMIN') {
+      const roleRoutes = { COORDINATOR:'/html/coordinatorhome.html', FACULTY:'/html/facultyhome.html', VOLUNTEER:'/html/volunteerhome.html', USER:'/html/userhome.html' };
+      window.location.href = roleRoutes[aUser.role] || '/html/login.html';
+    }
+
     const approvalType = document.getElementById('approvalType');
     const approvalList = document.getElementById('approvalList');
 
-    const dummyData = {
-      events: Array.from({length: 10}, (_, i) => `Event Approval ${i+1}`),
-      volunteers: Array.from({length: 10}, (_, i) => `Volunteer Approval ${i+1}`)
-    };
+    function renderItems(items, type) {
+      approvalList.innerHTML = items.map(item => {
+        if (type === 'events') {
+          const name = item.EVENT_NAME || item.event_name || `Event ${item.EVENT_ID || item.event_id}`;
+          const status = item.APPROVAL_STATUS || item.approval_status || item.STATUS || 'PENDING';
+          return `<div class="event-card"><strong>${name}</strong><div class="event-meta">Status: ${status}</div></div>`;
+        }
+        // volunteers
+        const id = item.APPLICATION_ID || item.application_id;
+        const uid = item.USER_ID || item.user_id;
+        const status = item.STATUS || 'PENDING';
+        return `<div class="event-card"><strong>Application ${id}</strong><div class="event-meta">User: ${uid} • Status: ${status}</div></div>`;
+      }).join('');
+    }
 
-    approvalType.addEventListener('change', e => {
-      const type = e.target.value;
-      approvalList.innerHTML = '';
-      if (type && dummyData[type]) {
-        dummyData[type].forEach(item => {
-          const div = document.createElement('div');
-          div.className = 'event-card';
-          div.textContent = item;
-          approvalList.appendChild(div);
-        });
+    async function loadApprovals(type) {
+      if (!type) { approvalList.innerHTML = ''; return; }
+      try {
+        const res = await fetch(`/admin/${aUser.user_id}/approval?type=${encodeURIComponent(type)}`, { headers: { 'Authorization': `Bearer ${aToken}` } });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.message || `Failed (${res.status})`);
+        const items = Array.isArray(data.approvals) ? data.approvals : (Array.isArray(data) ? data : []);
+        renderItems(items, type);
+      } catch (e) {
+        approvalList.innerHTML = '<div class="error-state">Failed to load approvals</div>';
       }
-    });
+    }
 
-    document.getElementById('logoutBtn').addEventListener('click', e => {
+    approvalType.addEventListener('change', e => loadApprovals(e.target.value));
+
+    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
       e.preventDefault();
-      alert('Logged out');
-      window.location.href = 'login.html';
+      try { await fetch('/auth/logout', { method: 'POST', headers: { 'Authorization': `Bearer ${aToken}` } }); } catch (_) {}
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/html/login.html';
     });
   </script>
 </body>

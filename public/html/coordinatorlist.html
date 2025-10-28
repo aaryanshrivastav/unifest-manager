@@ -60,7 +60,12 @@
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.message || `Failed to load events (${res.status})`);
       const events = Array.isArray(data.events) ? data.events : [];
-      eventSelect.innerHTML = events.map(e => `<option value="${e.event_id}">${e.event_name || 'Event'}${e.event_date ? ' — ' + new Date(e.event_date).toLocaleDateString() : ''}</option>`).join('');
+      eventSelect.innerHTML = events.map(e => {
+        const dateStr = e.event_date ? new Date(e.event_date).toLocaleDateString() : '';
+        const venueStr = e.venue || 'Venue TBD';
+        const meta = [dateStr, venueStr].filter(Boolean).join(' • ');
+        return `<option value="${e.event_id}">${e.event_name || 'Event'}${meta ? ' — ' + meta : ''}</option>`;
+      }).join('');
       if (events.length === 0) {
         eventSelect.innerHTML = '<option value="">No events available</option>';
       }

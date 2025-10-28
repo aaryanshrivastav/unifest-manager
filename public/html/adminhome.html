@@ -55,12 +55,55 @@
   </main>
 
   <script type="module">
-    document.getElementById('logoutBtn').addEventListener('click', e => {
+    // Auth guard
+    const aToken = localStorage.getItem('token');
+    const aUser = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!aToken || !aUser) {
+      window.location.href = '/html/login.html';
+    } else if (aUser.role !== 'ADMIN') {
+      const roleRoutes = { COORDINATOR:'/html/coordinatorhome.html', FACULTY:'/html/facultyhome.html', VOLUNTEER:'/html/volunteerhome.html', USER:'/html/userhome.html' };
+      window.location.href = roleRoutes[aUser.role] || '/html/login.html';
+    }
+
+    const infoValues = Array.from(document.querySelectorAll('.info-item .info-value'));
+
+    function setInfo(labelText, value) {
+      const item = Array.from(document.querySelectorAll('.info-item')).find(div => div.querySelector('.info-label')?.textContent?.includes(labelText));
+      if (item) item.querySelector('.info-value').textContent = value;
+    }
+
+    async function loadAdminHome() {
+      try {
+        const res = await fetch(`/admin/${aUser.user_id}/home`, { headers: { 'Authorization': `Bearer ${aToken}` } });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.message || `Failed (${res.status})`);
+
+        // Profile
+        setInfo('Profile', (data.admin?.name) || 'Admin');
+
+        // Counts: tolerate array or object
+        const c = data.counts || {};
+        const get = (obj, key, idx) => (obj && (obj[key] ?? (Array.isArray(obj) ? obj[idx] : undefined)));
+        setInfo('Event Approvals', get(c, 'PENDING_EVENTS', 0) ?? '0');
+        setInfo('Volunteer Approvals', get(c, 'PENDING_VOLUNTEERS', 1) ?? '0');
+        setInfo('Venue Count', get(c, 'TOTAL_VENUES', 2) ?? '0');
+        setInfo('Coordinator Count', get(c, 'TOTAL_COORDINATORS', 3) ?? '0');
+        setInfo('Volunteer Count', get(c, 'TOTAL_VOLUNTEERS', 4) ?? '0');
+        setInfo('Faculty Count', get(c, 'TOTAL_FACULTY', 5) ?? '0');
+      } catch (e) {
+        // minimal fallback
+      }
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
       e.preventDefault();
-      // Replace with actual Auth logout
-      alert('Logged out');
-      window.location.href = 'login.html';
+      try { await fetch('/auth/logout', { method: 'POST', headers: { 'Authorization': `Bearer ${aToken}` } }); } catch (_) {}
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/html/login.html';
     });
+
+    loadAdminHome();
   </script>
 </body>
 <!-- FOOTER -->
