@@ -35,7 +35,6 @@
   </main>
 
   <script>
-    // Auth guard
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user') || 'null');
     if (!token || !user) {
@@ -81,7 +80,6 @@
         return;
       }
 
-      // When an event is selected, backend returns { assigned, available }
       if (eventId) {
         const assigned = Array.isArray(data.assigned) ? data.assigned : [];
         if (!assigned.length) {

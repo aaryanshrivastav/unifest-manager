@@ -104,8 +104,6 @@ export async function loginUser(req, res) {
       PHONE: phone
     } = row;
 
-    console.log('Extracted values:', { user_id, dbEmail, role_type, first_name, last_name });
-
     const isMatch = await bcrypt.compare(password, dbPassword);
     if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
 

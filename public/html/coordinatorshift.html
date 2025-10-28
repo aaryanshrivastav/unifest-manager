@@ -28,7 +28,6 @@
   </main>
 
   <script>
-    // Auth guard
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user') || 'null');
     if (!token || !user) {

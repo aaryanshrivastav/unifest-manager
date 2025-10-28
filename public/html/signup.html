@@ -6,7 +6,6 @@
   <title>Sign Up - Unifest</title>
   <link rel="stylesheet" href="../css/signup.css">
   <script>
-    // Check if user is already logged in
     const token = localStorage.getItem('token');
     const user = localStorage.getItem('user');
     if (token && user) {
@@ -111,15 +110,12 @@
           throw new Error(data.message || 'Registration failed');
         }
 
-        // Store token and user data
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
 
-        // Show success message
         messageElement.textContent = 'Registration successful! Redirecting...';
         messageElement.style.color = 'green';
 
-        // Redirect based on role
         setTimeout(() => {
           const roleRoutes = {
             'ADMIN': '/html/adminhome.html',

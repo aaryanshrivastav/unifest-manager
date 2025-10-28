@@ -41,7 +41,6 @@
   </main>
 
   <script>
-    // Check if user is logged in and is a faculty
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user'));
     
@@ -49,7 +48,6 @@
       window.location.href = 'login.html';
     }
 
-    // Handle logout
     document.getElementById('logoutBtn').addEventListener('click', (e) => {
       e.preventDefault();
       localStorage.removeItem('token');
@@ -57,7 +55,6 @@
       window.location.href = 'login.html';
     });
 
-    // Format date function
     function formatDate(dateString) {
       const date = new Date(dateString);
       return date.toLocaleDateString('en-US', {
@@ -69,7 +66,6 @@
       });
     }
 
-    // Fetch faculty data and recent events
     async function loadFacultyHome() {
       try {
         const eventsContainer = document.getElementById('eventsContainer');
@@ -85,15 +81,12 @@
           throw new Error(data.message || 'Failed to load faculty data');
         }
 
-        // Update profile information
         document.getElementById('facultyName').textContent = data.faculty.name;
         document.getElementById('facultyEmail').textContent = data.faculty.email;
         document.getElementById('facultyAvatar').textContent = data.faculty.name.charAt(0);
 
-        // Update events count
         document.getElementById('facultyEvents').textContent = data.events.length;
 
-        // Render recent events
         eventsContainer.innerHTML = data.events.map(event => `
   <div class="event-card">
     <h3>${event.event_name}</h3>
@@ -111,7 +104,6 @@
       }
     }
 
-    // Load data when page loads
     loadFacultyHome();
   </script>
 </body>

@@ -28,7 +28,6 @@
   </main>
 
   <script>
-    // Auth guard for Volunteer
     const sToken = localStorage.getItem('token');
     const sUser = JSON.parse(localStorage.getItem('user') || 'null');
     if (!sToken || !sUser) {
@@ -65,7 +64,6 @@
 
     loadShifts();
 
-    // Logout handler for the navbar link
     document.addEventListener('click', async (e) => {
       const link = e.target.closest('a');
       if (link && /logout/i.test(link.getAttribute('href') || '')) {

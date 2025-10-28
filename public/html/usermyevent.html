@@ -133,7 +133,6 @@
                             throw new Error(`${res.status} ${t}`);
                         }
                         const body = await res.json();
-                        // body likely: { success: true, registrations: [...] }
                         const regs = body.registrations || body;
                         userNameEl.textContent = `${user.first_name} ${user.last_name}`;
                         renderRegistrations(regs || []);
@@ -144,8 +143,6 @@
                 }
 
                 document.querySelectorAll('.nav-links a[href="./usermyevent.html"]').forEach(a => a.classList.add('active'));
-
-                // Logout hookup (if present)
                 const logout = document.getElementById('logoutBtn');
                 if (logout) {
                     logout.addEventListener('click', async (e) => {

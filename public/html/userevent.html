@@ -48,7 +48,6 @@
   </main>
 
   <script>
-    // Inline events loader (no external js)
     (function() {
       const token = localStorage.getItem('token');
       const userRaw = localStorage.getItem('user');
@@ -102,7 +101,6 @@
         }).join('');
       }
 
-      // fetch all events for this user (controller exposes at /user/:user_id/events)
       async function loadEvents() {
         try {
           const res = await fetch(`/user/${user.user_id}/events`, { headers: { Authorization: `Bearer ${token}` } });
@@ -111,10 +109,8 @@
             throw new Error(`Server error ${res.status}: ${txt}`);
           }
           const body = await res.json();
-          // body may be { events: [...] } or an array
           const events = body.events || body;
           renderCards(events || []);
-          // attach search/filter behavior
           searchInput.addEventListener('input', () => {
             const q = searchInput.value.trim().toLowerCase();
             const filtered = (events || []).filter(ev => {
@@ -146,7 +142,6 @@
         }
       }
 
-      // Logout
       document.getElementById('logoutBtn').addEventListener('click', async (e) => {
         e.preventDefault();
         try {

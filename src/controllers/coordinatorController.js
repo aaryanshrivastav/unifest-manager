@@ -130,7 +130,6 @@ export const getVolunteerList = async (req, res) => {
       { event_id },
       { outFormat: oracledb.OUT_FORMAT_OBJECT }
     );
-    console.log(assignedResult.rows);
     // Available volunteers (not yet assigned to this event)
     const availableResult = await connection.execute(
       `SELECT u.user_id, u.first_name, u.last_name, u.email

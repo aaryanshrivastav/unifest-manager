@@ -1,6 +1,5 @@
 import { getConnection } from "../config/db.js";
 import oracledb from "oracledb";
-// 1️⃣ Admin Home: profile + counts
 export const getAdminHome = async (req, res) => {
   try {
     const { admin_id } = req.params;
@@ -40,7 +39,6 @@ export const getAdminHome = async (req, res) => {
   }
 };
 
-// 2️⃣ Approval page: show pending events or volunteer applications
 export const getApprovals = async (req, res) => {
   let connection;
   try {
@@ -57,13 +55,12 @@ export const getApprovals = async (req, res) => {
     });
 
     if (!result || !result.rows) {
-      console.error("⚠️ Query returned no rows or failed:", result);
       return res.status(500).json({ success: false, message: "Query failed or returned nothing" });
     }
 
     res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
-    console.error("❌ getApprovals Error:", err);
+    console.error("getApprovals Error:", err);
     res.status(500).json({ success: false, message: "Error fetching approvals" });
   } finally {
     if (connection) {
@@ -77,7 +74,6 @@ export const getApprovals = async (req, res) => {
 };
 
 
-// 3️⃣ List page: show lists of any entity
 export const getAdminLists = async (req, res) => {
   try {
     const { type } = req.query; // type='events', 'venues', 'volunteers', 'coordinators', 'faculty'

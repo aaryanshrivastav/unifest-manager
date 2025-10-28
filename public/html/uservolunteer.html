@@ -81,8 +81,6 @@
                     const name = document.getElementById('name').value.trim();
                     const year = document.getElementById('year').value;
                     const experience = document.getElementById('experience').value.trim();
-
-                    // Compose a description for backend
                     const description = `Name: ${name}; Year: ${year}; Experience: ${experience}`;
 
                     try {
@@ -99,8 +97,6 @@
                             const t = await res.text();
                             throw new Error(t || `Server returned ${res.status}`);
                         }
-
-                        // show success
                         success.style.display = '';
                         form.reset();
                     } catch (err) {

@@ -94,7 +94,6 @@
 
 
   <script>
-    // Check if user is logged in and is a faculty
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user'));
     
@@ -102,7 +101,6 @@
       window.location.href = 'login.html';
     }
 
-    // Handle logout
     document.getElementById('logoutBtn').addEventListener('click', (e) => {
       e.preventDefault();
       localStorage.removeItem('token');
@@ -110,11 +108,9 @@
       window.location.href = 'login.html';
     });
 
-    // Handle form submission
     document.getElementById('eventForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       
-      // Format date function to match Oracle's expected format
       function formatDate(dateStr, timeStr) {
         const date = new Date(dateStr);
         const day = String(date.getDate()).padStart(2, '0');
@@ -165,12 +161,10 @@
       }
     });
 
-    // Set min dates for registration fields
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('regStart').min = today;
     document.getElementById('regEnd').min = today;
 
-    // Validate event end date/time is after start date/time
     function validateEventDates() {
       const startDate = document.getElementById('eventStartDate').value;
       const startTime = document.getElementById('eventStartTime').value;
@@ -194,7 +188,6 @@
     document.getElementById('eventEndDate').addEventListener('change', validateEventDates);
     document.getElementById('eventEndTime').addEventListener('change', validateEventDates);
 
-    // Validate registration end date is after start date
     document.getElementById('regEnd').addEventListener('change', (e) => {
       const startDate = document.getElementById('regStart').value;
       const endDate = e.target.value;
