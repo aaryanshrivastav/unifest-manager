@@ -27,6 +27,55 @@
     </div>
   </main>
 
-  <script src="volunteershift.js"></script>
+  <script>
+    // Auth guard for Volunteer
+    const sToken = localStorage.getItem('token');
+    const sUser = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!sToken || !sUser) {
+      window.location.href = '/html/login.html';
+    } else if (sUser.role !== 'VOLUNTEER') {
+      const roleRoutes = { ADMIN:'/html/adminhome.html', COORDINATOR:'/html/coordinatorhome.html', FACULTY:'/html/facultyhome.html', USER:'/html/userhome.html' };
+      window.location.href = roleRoutes[sUser.role] || '/html/login.html';
+    }
+
+    const list = document.getElementById('shift-list');
+    function fmt(dt) { try { return dt ? new Date(dt).toLocaleString() : 'TBD'; } catch(_) { return 'TBD'; } }
+
+    async function loadShifts() {
+      try {
+        const res = await fetch(`/volunteer/${sUser.user_id}/shift`, { headers: { 'Authorization': `Bearer ${sToken}` } });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.message || `Failed (${res.status})`);
+
+        const shifts = Array.isArray(data.shifts) ? data.shifts : (Array.isArray(data) ? data : []);
+        if (!shifts.length) {
+          list.innerHTML = '<div class="empty-state">No assigned shifts yet.</div>';
+          return;
+        }
+        list.innerHTML = shifts.map(s => `
+          <div class="shift-card">
+            <div class="shift-title">${s.event_name || 'Event'}</div>
+            <div class="shift-time">${fmt(s.start_time)} - ${fmt(s.end_time)}</div>
+          </div>
+        `).join('');
+      } catch (e) {
+        list.innerHTML = '<div class="error-state">Error loading shifts</div>';
+      }
+    }
+
+    loadShifts();
+
+    // Logout handler for the navbar link
+    document.addEventListener('click', async (e) => {
+      const link = e.target.closest('a');
+      if (link && /logout/i.test(link.getAttribute('href') || '')) {
+        e.preventDefault();
+        try { await fetch('/auth/logout', { method: 'POST', headers: { 'Authorization': `Bearer ${sToken}` } }); } catch (_) {}
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/html/login.html';
+      }
+    });
+  </script>
 </body>
 </html>

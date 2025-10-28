@@ -46,6 +46,55 @@
         </div>
     </div>
 
-    <script src="volunteerevent.js"></script>
+    <script>
+        // Auth guard for Volunteer
+        const eToken = localStorage.getItem('token');
+        const eUser = JSON.parse(localStorage.getItem('user') || 'null');
+        if (!eToken || !eUser) {
+            window.location.href = '/html/login.html';
+        } else if (eUser.role !== 'VOLUNTEER') {
+            const roleRoutes = { ADMIN:'/html/adminhome.html', COORDINATOR:'/html/coordinatorhome.html', FACULTY:'/html/facultyhome.html', USER:'/html/userhome.html' };
+            window.location.href = roleRoutes[eUser.role] || '/html/login.html';
+        }
+
+        const eventsContainer = document.getElementById('eventsContainer');
+        const noEvents = document.getElementById('noEvents');
+
+        function card(event) {
+            const dateTxt = event.start_time || event.event_date;
+            const when = dateTxt ? new Date(dateTxt).toLocaleString() : 'TBD';
+            const venue = event.venue || event.venue_name || 'Venue TBD';
+            return `
+            <div class="event-card">
+                <h3>${event.event_name || 'Event'}</h3>
+                <p class="event-description">${event.description || ''}</p>
+                <div class="event-times">
+                    <p>When: ${when}</p>
+                    <p>Where: ${venue}</p>
+                </div>
+            </div>`;
+        }
+
+        async function loadVolunteerEvents() {
+            try {
+                const res = await fetch(`/volunteer/${eUser.user_id}/events`, { headers: { 'Authorization': `Bearer ${eToken}` } });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) throw new Error(data.message || `Failed (${res.status})`);
+                const events = Array.isArray(data.events) ? data.events : (Array.isArray(data) ? data : []);
+                if (!events.length) {
+                    noEvents.style.display = 'block';
+                    eventsContainer.innerHTML = '';
+                    return;
+                }
+                noEvents.style.display = 'none';
+                eventsContainer.innerHTML = events.map(card).join('');
+            } catch (e) {
+                noEvents.style.display = 'block';
+                eventsContainer.innerHTML = '';
+            }
+        }
+
+        loadVolunteerEvents();
+    </script>
 </body>
 </html>

@@ -49,6 +49,49 @@
         </div>
     </div>
 
-    <script src="volunteerhome.js"></script>
+    <script>
+        // Auth guard for Volunteer
+        const vToken = localStorage.getItem('token');
+        const vUser = JSON.parse(localStorage.getItem('user') || 'null');
+        if (!vToken || !vUser) {
+            window.location.href = '/html/login.html';
+        } else if (vUser.role !== 'VOLUNTEER') {
+            const roleRoutes = { ADMIN:'/html/adminhome.html', COORDINATOR:'/html/coordinatorhome.html', FACULTY:'/html/facultyhome.html', USER:'/html/userhome.html' };
+            window.location.href = roleRoutes[vUser.role] || '/html/login.html';
+        }
+
+        function safe(val, fallback='—') { return (val === undefined || val === null || val === '') ? fallback : val; }
+
+        async function loadVolunteerHome() {
+            try {
+                const res = await fetch(`/volunteer/${vUser.user_id}/home`, { headers: { 'Authorization': `Bearer ${vToken}` } });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) throw new Error(data.message || `Failed (${res.status})`);
+
+                // Profile
+                const name = data.volunteer?.name || `${safe(data.volunteer?.first_name || vUser.first_name, '')} ${safe(data.volunteer?.last_name || vUser.last_name, '')}`.trim() || 'Volunteer';
+                document.getElementById('profileName').textContent = name;
+                // Optional placeholders for year/experience if provided
+                document.getElementById('profileYear').textContent = safe(data.volunteer?.year);
+                document.getElementById('profileExperience').textContent = safe(data.volunteer?.experience, '');
+            } catch (e) {
+                document.getElementById('profileName').textContent = 'Error loading profile';
+            }
+        }
+
+        // Logout handler (intercept any logout link)
+        document.addEventListener('click', async (e) => {
+            const t = e.target.closest('a');
+            if (t && /logout/i.test(t.getAttribute('href') || '')) {
+                e.preventDefault();
+                try { await fetch('/auth/logout', { method: 'POST', headers: { 'Authorization': `Bearer ${vToken}` } }); } catch (_) {}
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/html/login.html';
+            }
+        });
+
+        loadVolunteerHome();
+    </script>
 </body>
 </html>
