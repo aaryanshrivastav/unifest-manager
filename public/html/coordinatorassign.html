@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Assign Volunteers - Coordinator</title>
-  <link rel="stylesheet" href="coordinatorassign.css">
+  <link rel="stylesheet" href="../css/coordinatorassign.css">
 </head>
 <body data-page="assign">
   <header class="header">
@@ -35,7 +35,139 @@
     </div>
   </main>
 
-  <script type="module" src="js/coordinatorassign.js"></script>
+  <script>
+    // Auth check and role guard
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!token || !user) {
+      window.location.href = '/html/login.html';
+    } else if (user.role !== 'COORDINATOR') {
+      const roleRoutes = {
+        'ADMIN': '/html/adminhome.html',
+        'FACULTY': '/html/facultyhome.html',
+        'VOLUNTEER': '/html/volunteerhome.html',
+        'USER': '/html/userhome.html'
+      };
+      window.location.href = roleRoutes[user.role] || '/html/login.html';
+    }
+
+    const eventSelect = document.getElementById('eventSelect');
+    const volunteerList = document.getElementById('volunteerList');
+
+    function createAssignButton() {
+      const existing = document.getElementById('assignBtn');
+      if (existing) return existing;
+      const btn = document.createElement('button');
+      btn.id = 'assignBtn';
+      btn.className = 'btn primary';
+      btn.textContent = 'Assign Selected';
+      btn.style.marginTop = '1rem';
+      volunteerList.parentElement.appendChild(btn);
+      return btn;
+    }
+
+    async function loadCoordinatorEvents() {
+      // Use home endpoint to get coordinator events list
+      const res = await fetch(`/coordinator/${user.user_id}/home`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message || `Failed to load events (${res.status})`);
+      const events = Array.isArray(data.events) ? data.events : [];
+      eventSelect.innerHTML = events.map(e => `<option value="${e.event_id}">${e.event_name || 'Event'}${e.event_date ? ' — ' + new Date(e.event_date).toLocaleDateString() : ''}</option>`).join('');
+      if (events.length === 0) {
+        eventSelect.innerHTML = '<option value="">No events available</option>';
+      }
+    }
+
+    async function loadVolunteersForEvent(eventId) {
+      volunteerList.innerHTML = '<div class="note">Loading volunteers…</div>';
+      const url = eventId ? `/coordinator/${user.user_id}/list?event_id=${encodeURIComponent(eventId)}` : `/coordinator/${user.user_id}/list`;
+      const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        volunteerList.innerHTML = `<div class="error-state">Failed to load volunteers: ${data.message || res.status}</div>`;
+        return;
+      }
+      // Use available volunteers for assignment
+      const volunteers = Array.isArray(data.available) ? data.available : [];
+      if (volunteers.length === 0) {
+        volunteerList.innerHTML = '<div class="empty-state">No available volunteers to assign for this event.</div>';
+        return;
+      }
+      volunteerList.innerHTML = volunteers.map(v => `
+        <label class="event-card" style="display:flex;align-items:center;gap:.75rem">
+          <input type="checkbox" class="vol-check" value="${v.user_id || v.volunteer_id}">
+          <div style="flex:1">
+            <div style="font-weight:600">${v.name || `${v.first_name || ''} ${v.last_name || ''}`.trim() || 'Volunteer'}</div>
+            <div class="event-meta">${v.email || ''}</div>
+          </div>
+        </label>
+      `).join('');
+      createAssignButton();
+    }
+
+    async function assignSelected() {
+      const eventId = eventSelect.value;
+      if (!eventId) {
+        alert('Select an event first');
+        return;
+      }
+      const selected = Array.from(document.querySelectorAll('.vol-check:checked')).map(i => i.value);
+      if (selected.length === 0) {
+        alert('Select at least one volunteer');
+        return;
+      }
+      try {
+        const res = await fetch(`/coordinator/${user.user_id}/assign`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ event_id: eventId, volunteer_ids: selected })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.message || `Assign failed (${res.status})`);
+        alert('Volunteers assigned successfully');
+        // reload volunteers list to reflect changes, if backend filters assigned vs available
+        loadVolunteersForEvent(eventId);
+      } catch (e) {
+        alert(e.message);
+      }
+    }
+
+    // Events
+    eventSelect.addEventListener('change', (e) => {
+      const id = e.target.value;
+      if (id) loadVolunteersForEvent(id);
+    });
+
+    // Assign button
+    document.addEventListener('click', (e) => {
+      if (e.target && e.target.id === 'assignBtn') assignSelected();
+    });
+
+    // Logout handler
+    document.getElementById('logoutBtn')?.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try { await fetch('/auth/logout', { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } }); } catch (_) {}
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/html/login.html';
+    });
+
+    // Initial load
+    (async function init() {
+      try {
+        await loadCoordinatorEvents();
+        const initial = eventSelect.value;
+        if (initial) await loadVolunteersForEvent(initial);
+      } catch (e) {
+        volunteerList.innerHTML = `<div class=\"error-state\">${e.message}</div>`;
+      }
+    })();
+  </script>
 </body>
 <!-- FOOTER -->
 <footer>

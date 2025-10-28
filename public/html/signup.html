@@ -12,11 +12,11 @@
     if (token && user) {
       const userData = JSON.parse(user);
       const roleRoutes = {
-        'ROLE_ADMIN': '/html/adminhome.html',
-        'ROLE_COORDINATOR': '/html/coordinatorhome.html',
-        'ROLE_FACULTY': '/html/facultyhome.html',
-        'ROLE_VOLUNTEER': '/html/volunteerhome.html',
-        'ROLE_USER': '/html/userhome.html'
+        'ADMIN': '/html/adminhome.html',
+        'COORDINATOR': '/html/coordinatorhome.html',
+        'FACULTY': '/html/facultyhome.html',
+        'VOLUNTEER': '/html/volunteerhome.html',
+        'USER': '/html/userhome.html'
       };
       window.location.href = roleRoutes[userData.role] || '/html/userhome.html';
     }
@@ -122,11 +122,11 @@
         // Redirect based on role
         setTimeout(() => {
           const roleRoutes = {
-            'ROLE_ADMIN': '/html/adminhome.html',
-            'ROLE_COORDINATOR': '/html/coordinatorhome.html',
-            'ROLE_FACULTY': '/html/facultyhome.html',
-            'ROLE_VOLUNTEER': '/html/volunteerhome.html',
-            'ROLE_USER': '/html/userhome.html'
+            'ADMIN': '/html/adminhome.html',
+            'COORDINATOR': '/html/coordinatorhome.html',
+            'FACULTY': '/html/facultyhome.html',
+            'VOLUNTEER': '/html/volunteerhome.html',
+            'USER': '/html/userhome.html'
           };
           window.location.href = roleRoutes[data.user.role] || '/html/userhome.html';
         }, 1500);

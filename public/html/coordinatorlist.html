@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Coordinator Volunteer List - Unifest</title>
-  <link rel="stylesheet" href="coordinatorlist.css">
+  <link rel="stylesheet" href="../css/coordinatorlist.css">
 </head>
 <body data-page="list">
   <header class="header">
@@ -34,7 +34,111 @@
     </div>
   </main>
 
-  <script type="module" src="js/coordinatorlist.js"></script>
+  <script>
+    // Auth guard
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!token || !user) {
+      window.location.href = '/html/login.html';
+    } else if (user.role !== 'COORDINATOR') {
+      const roleRoutes = {
+        'ADMIN': '/html/adminhome.html',
+        'FACULTY': '/html/facultyhome.html',
+        'VOLUNTEER': '/html/volunteerhome.html',
+        'USER': '/html/userhome.html'
+      };
+      window.location.href = roleRoutes[user.role] || '/html/login.html';
+    }
+
+    const eventSelect = document.getElementById('eventSelect');
+    const volunteerList = document.getElementById('volunteerList');
+
+    async function loadCoordinatorEvents() {
+      const res = await fetch(`/coordinator/${user.user_id}/home`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message || `Failed to load events (${res.status})`);
+      const events = Array.isArray(data.events) ? data.events : [];
+      eventSelect.innerHTML = events.map(e => `<option value="${e.event_id}">${e.event_name || 'Event'}${e.event_date ? ' — ' + new Date(e.event_date).toLocaleDateString() : ''}</option>`).join('');
+      if (events.length === 0) {
+        eventSelect.innerHTML = '<option value="">No events available</option>';
+      }
+    }
+
+    async function loadVolunteers(eventId) {
+      volunteerList.innerHTML = '<div class="note">Loading…</div>';
+      const url = eventId ? `/coordinator/${user.user_id}/list?event_id=${encodeURIComponent(eventId)}` : `/coordinator/${user.user_id}/list`;
+      const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        volunteerList.innerHTML = `<div class="error-state">${data.message || 'Failed to load'}</div>`;
+        return;
+      }
+
+      // When an event is selected, backend returns { assigned, available }
+      if (eventId) {
+        const assigned = Array.isArray(data.assigned) ? data.assigned : [];
+        if (!assigned.length) {
+          volunteerList.innerHTML = '<div class="empty-state">No assigned volunteers for this event.</div>';
+          return;
+        }
+        volunteerList.innerHTML = assigned.map(v => `
+          <div class="event-card">
+            <div class="event-details">
+              <h4>${`${v.first_name || ''} ${v.last_name || ''}`.trim() || 'Volunteer'}</h4>
+              <div class="event-meta">${v.email || ''}${v.shift_start ? ' • ' + new Date(v.shift_start).toLocaleString() : ''}${v.shift_end ? ' - ' + new Date(v.shift_end).toLocaleString() : ''}</div>
+            </div>
+          </div>
+        `).join('');
+        return;
+      }
+
+      // If no eventId (future use), show grouped format if provided
+      const byEvent = data.byEvent || null;
+      if (byEvent && typeof byEvent === 'object') {
+        volunteerList.innerHTML = Object.entries(byEvent).map(([eid, list]) => `
+          <div class="event-group">
+            <h3>Event ${eid}</h3>
+            ${Array.isArray(list) && list.length ? list.map(v => `
+              <div class="event-card">
+                <div class="event-details">
+                  <h4>${`${v.first_name || ''} ${v.last_name || ''}`.trim() || 'Volunteer'}</h4>
+                  <div class="event-meta">${v.email || ''}</div>
+                </div>
+              </div>
+            `).join('') : '<div class="empty-state">No volunteers</div>'}
+          </div>
+        `).join('');
+        return;
+      }
+
+      volunteerList.innerHTML = '<div class="empty-state">Select an event to view assigned volunteers.</div>';
+    }
+
+    eventSelect.addEventListener('change', (e) => {
+      const id = e.target.value;
+      if (id) loadVolunteers(id);
+    });
+
+    document.getElementById('logoutBtn')?.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try { await fetch('/auth/logout', { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } }); } catch (_) {}
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/html/login.html';
+    });
+
+    (async function init() {
+      try {
+        await loadCoordinatorEvents();
+        const initial = eventSelect.value;
+        if (initial) await loadVolunteers(initial);
+      } catch (e) {
+        volunteerList.innerHTML = `<div class=\"error-state\">${e.message}</div>`;
+      }
+    })();
+  </script>
 </body>
 <!-- FOOTER -->
 <footer>

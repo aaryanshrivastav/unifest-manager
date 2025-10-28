@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Coordinator Dashboard - Unifest</title>
-  <link rel="stylesheet" href="coordinatorhome.css">
+  <link rel="stylesheet" href="../css/coordinatorhome.css">
 </head>
 <body data-page="coordinator">
   <header class="header">
@@ -42,7 +42,90 @@
     </div>
   </main>
 
-  <script type="module" src="js/coordinatorhome.js"></script>
+	<script>
+	  // Auth guard and role routing
+	  const token = localStorage.getItem('token');
+	  const user = JSON.parse(localStorage.getItem('user') || 'null');
+	  if (!token || !user) {
+	    window.location.href = '/html/login.html';
+	  } else if (user.role !== 'COORDINATOR') {
+	    const roleRoutes = {
+	      'ADMIN': '/html/adminhome.html',
+	      'FACULTY': '/html/facultyhome.html',
+	      'VOLUNTEER': '/html/volunteerhome.html',
+	      'USER': '/html/userhome.html'
+	    };
+	    window.location.href = roleRoutes[user.role] || '/html/login.html';
+	  }
+
+	  function formatDate(value) {
+	    try {
+	      return value ? new Date(value).toLocaleDateString() : 'TBD';
+	    } catch (_) {
+	      return 'TBD';
+	    }
+	  }
+
+	  async function loadCoordinatorHome() {
+	    try {
+	      const res = await fetch(`/coordinator/${user.user_id}/home`, {
+	        headers: {
+	          'Authorization': `Bearer ${token}`,
+	          'Content-Type': 'application/json'
+	        }
+	      });
+	      const data = await res.json().catch(() => ({}));
+	      if (!res.ok) throw new Error(data.message || `Failed (${res.status})`);
+
+	      // Profile header
+	      const name = data.coordinator?.name || `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Coordinator';
+	      document.getElementById('coordName').textContent = name;
+	      document.getElementById('coordEmail').textContent = data.coordinator?.email || user.email || '—';
+	      document.getElementById('coordAvatar').textContent = (name[0] || 'C').toUpperCase();
+
+	      // Info grid
+	      document.getElementById('coordDept').textContent = data.coordinator?.department || '—';
+	      document.getElementById('coordPhone').textContent = data.coordinator?.phone || user.phone || '—';
+	      document.getElementById('coordEvents').textContent = Array.isArray(data.events) ? data.events.length : (data.stats?.total_events ?? '—');
+	      document.getElementById('coordVolunteers').textContent = data.stats?.volunteers_managed ?? '—';
+
+	      // Events list (top 5)
+	      const events = (data.events || []).slice(0, 5);
+	      const container = document.getElementById('eventsContainer');
+	      if (!events.length) {
+	        container.innerHTML = '<div class="empty-state">No events assigned yet.</div>';
+	        return;
+	      }
+	      container.innerHTML = events.map(evt => `
+	        <div class="event-card">
+	          <div class="event-details">
+	            <h3>${evt.event_name || 'Untitled Event'}</h3>
+	            <div class="event-meta">
+	              <span>📅 ${formatDate(evt.event_date)}</span>
+	              <span>📍 ${evt.venue || 'Venue TBD'}</span>
+	            </div>
+	          </div>
+	        </div>
+	      `).join('');
+	    } catch (err) {
+	      const container = document.getElementById('eventsContainer');
+	      container.innerHTML = `<div class="error-state">Failed to load: ${err.message}</div>`;
+	    }
+	  }
+
+	  // Logout handler
+	  document.getElementById('logoutBtn')?.addEventListener('click', async (e) => {
+	    e.preventDefault();
+	    try {
+	      await fetch('/auth/logout', { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
+	    } catch (_) {}
+	    localStorage.removeItem('token');
+	    localStorage.removeItem('user');
+	    window.location.href = '/html/login.html';
+	  });
+
+	  loadCoordinatorHome();
+	</script>
 </body>
 <!-- FOOTER -->
 <footer>
