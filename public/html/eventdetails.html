@@ -31,16 +31,65 @@
         <div class="info-item"><div class="info-label">Coordinator</div><div class="info-value" id="eventCoord">—</div></div>
       </div>
 
-      <h2 class="section-title">Volunteer Shifts</h2>
-      <div id="shiftContainer" class="events-list"></div>
-
       <div class="actions">
-        <button class="btn primary" id="registerEvent">Register</button>
-        <button class="btn ghost" id="applyVolunteer">Apply as Volunteer</button>
+        <a href="register.html" class="btn primary" id="registerEvent">Register</a>
+        
       </div>
     </div>
   </main>
 
-  <script type="module" src="js/eventdetails.js"></script>
+    <script type="module">
+document.addEventListener('DOMContentLoaded', async () => {
+  console.log("✅ Event Details page loaded");
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const event_id = urlParams.get('event_id');
+  console.log("🔍 Extracted event_id from URL:", event_id);
+
+  if (!event_id) {
+    console.error("❌ No event_id found in URL");
+    document.getElementById('eventDescription').textContent = 'No event selected.';
+    return;
+  }
+
+  const token = localStorage.getItem('token');
+  if (!token) {
+    console.warn("⚠️ No token found. Redirecting to login...");
+    window.location.href = '/html/login.html';
+    return;
+  }
+
+  try {
+    console.log(`📡 Fetching details for event_id: ${event_id}`);
+    const res = await fetch(`http://localhost:5000/event/${event_id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    console.log("📥 Response status:", res.status);
+
+    const text = await res.text();
+    console.log("📄 Raw response text:", text);
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch event details (${res.status})`);
+    }
+
+    const event = JSON.parse(text);
+    console.log("✅ Parsed event data:", event);
+
+    document.getElementById('eventTitle').textContent = event.event_name;
+    document.getElementById('eventDescription').textContent = event.description || 'No description available.';
+    document.getElementById('eventDate').textContent = event.event_date || '—';
+    document.getElementById('eventVenue').textContent = event.venue_name || '—';
+    document.getElementById('eventCategory').textContent = event.category || '—';
+    document.getElementById('eventCoord').textContent = event.coordinator_name || '—';
+
+    console.log("🎯 Event details rendered successfully");
+  } catch (err) {
+    console.error("💥 Error loading event details:", err);
+    document.getElementById('eventDescription').textContent = 'Error loading event details.';
+  }
+});
+</script>
 </body>
 </html>

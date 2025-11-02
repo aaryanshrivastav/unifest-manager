@@ -88,16 +88,16 @@
           const date = dateRaw ? new Date(dateRaw).toLocaleDateString() : 'Date TBD';
           const venue = field(ev, 'venue', 'VENUE', 'location') || '';
           return `
-            <div class="event-card">
-              <div class="event-details">
-                <h3>${name}</h3>
-                <div class="event-meta">
-                  <span>📅 ${date}</span>
-                  <span>📍 ${venue}</span>
+              <div class="event-card" data-event-id="${field(ev, 'event_id', 'EVENT_ID') || ''}">
+                <div class="event-details">
+                  <h3>${name}</h3>
+                  <div class="event-meta">
+                    <span>📅 ${date}</span>
+                    <span>📍 ${venue}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          `;
+            `;
         }).join('');
       }
 
@@ -111,6 +111,14 @@
           const body = await res.json();
           const events = body.events || body;
           renderCards(events || []);
+          eventsGrid.addEventListener('click', (e) => {
+          const card = e.target.closest('.event-card');
+          if (!card) return;
+          const event_id = card.dataset.eventId;
+          if (event_id) {
+            window.location.href = `./eventdetails.html?event_id=${event_id}`;
+          }
+        });
           searchInput.addEventListener('input', () => {
             const q = searchInput.value.trim().toLowerCase();
             const filtered = (events || []).filter(ev => {
